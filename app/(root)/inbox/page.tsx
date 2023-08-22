@@ -5,6 +5,14 @@ import {notificationColumns} from "./components/columns"
 import {prismaDB} from "@/lib/prisma";
 import InboxSidebar from "@/app/(root)/inbox/components/inbox-sidebar";
 import {Separator} from "@/components/ui/separator";
+import {Metadata} from "next";
+
+export function generateMetadata(): Metadata {
+    return {
+        title: `Inbox | ${process.env.NEXT_PUBLIC_APP_NAME}`,
+        description: 'Inbox',
+    }
+}
 
 export default async function Inbox() {
 

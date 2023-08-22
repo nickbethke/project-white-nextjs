@@ -1,7 +1,7 @@
 "use client";
 
 import {Button} from "@/components/ui/button";
-import {Archive, ArrowUp, Trash} from "lucide-react";
+import {ArrowUp, Trash} from "lucide-react";
 import React from "react";
 import {AlertModalWithoutZustand} from "@/components/modals/alert-modal";
 import axios from "axios";

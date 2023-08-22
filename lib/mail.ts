@@ -11,12 +11,11 @@ export class Mail {
     static async sendEmail({to, subject, html}: { to: string, subject: string, html: string }) {
         const message = {
             text: subject,
-            from: process.env.SMTP_FROM as string,
+            from: `Project White <${process.env.SMTP_FROM}>`,
             to,
             subject,
             attachment: [{data: html, alternative: true}],
         };
-        console.log(message);
         await this.client.sendAsync(message);
     }
 

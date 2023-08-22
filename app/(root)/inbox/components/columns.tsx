@@ -2,7 +2,6 @@
 
 import {ColumnDef} from "@tanstack/react-table"
 import {notifications, users} from "@prisma/client";
-import Gravatar from "@/components/gravatar";
 import {notificationTypes} from "@/lib/constants/notification.constants";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
@@ -16,7 +15,6 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Checkbox} from "@/components/ui/checkbox";
-import {UserButton} from "@/components/user-button";
 import ProfileButton from "@/components/profile-button";
 
 

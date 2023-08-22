@@ -2,8 +2,6 @@ import React from "react";
 import {authOptions} from "@/lib/auth";
 import {Skeleton} from "@/components/ui/skeleton";
 import {getServerSession} from "next-auth";
-import {createHash} from "crypto";
-import Image from "next/image";
 import Gravatar from "@/components/gravatar";
 import Link from "next/link";
 

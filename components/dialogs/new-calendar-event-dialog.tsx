@@ -1,38 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  NewCalendarEventInput,
-  NewCalendarEventSchema,
-} from "@/lib/validations/calendar-event.schema";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import {Button} from "@/components/ui/button";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
+import {Input} from "@/components/ui/input";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {NewCalendarEventInput, NewCalendarEventSchema,} from "@/lib/validations/calendar-event.schema";
+import {useRouter} from "next/navigation";
+import React, {useEffect} from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { LinkIcon, Pen } from "lucide-react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { MultiInput } from "@/components/ui/multi-input";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {Textarea} from "@/components/ui/textarea";
+import {MultiInput} from "@/components/ui/multi-input";
 import moment from "moment";
 import Image from "next/image";
-import { pageTitleFromUrl } from "@/lib/utils";
 
 type NewCalendarEventDialogProps = {
   open: boolean;

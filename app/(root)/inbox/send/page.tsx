@@ -1,5 +1,4 @@
 import {prismaDB} from "@/lib/prisma";
-import {notification_type} from "@prisma/client";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/lib/auth";
 import InboxSidebar from "@/app/(root)/inbox/components/inbox-sidebar";

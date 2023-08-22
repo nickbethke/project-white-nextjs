@@ -13,8 +13,10 @@ declare namespace NodeJS {
         SMTP_FROM_NAME: string
         NEXTAUTH_SECRET: string
         NEXTAUTH_URL: string
-        PROJECT_WHITE_DATE_FORMAT: string
-        PROJECT_WHITE_TIME_FORMAT: string
-        PROJECT_WHITE_DATETIME_FORMAT: string
+        NEXT_PUBLIC_PROJECT_WHITE_DATE_FORMAT: string
+        NEXT_PUBLIC_PROJECT_WHITE_TIME_FORMAT: string
+        NEXT_PUBLIC_PROJECT_WHITE_DATETIME_FORMAT: string
+        NEXT_PUBLIC_APP_NAME: string
+        NEXT_PUBLIC_API_URL: string
     }
 }

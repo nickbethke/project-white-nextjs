@@ -7,6 +7,8 @@ import Link from "next/link";
 import {cn} from "@/lib/utils";
 import {Archive, ChevronRight, MailQuestion, MailWarning} from "lucide-react";
 import {notification_status, notification_type} from "@prisma/client";
+import {useUser} from "@/components/providers/user-provider";
+import {Permissions} from "@/lib/user";
 
 type InboxSidebarProps = {
     type?: notification_type | "all",
@@ -16,12 +18,16 @@ type InboxSidebarProps = {
 
 const InboxSidebar: React.FC<InboxSidebarProps> = ({type = 'all', status = 'all', send = false}) => {
 
+    const user = useUser();
+
     const itemClasses = cn("flex items-center gap-4 px-4 py-2 hover:bg-accent cursor-pointer transition");
     return (
         <>
             <div className="border-l h-full w-0 md:w-64 xl:w-72 2xl:w-80 pt-16 fixed top-0 right-0">
                 <div className="p-4 flex flex-col gap-4">
-                    <NewMessageDialog/>
+                    {user.permission(Permissions.notification_create) &&
+                        <NewMessageDialog/>
+                    }
                     <Separator/>
                     <div className="text-muted-foreground">Filters</div>
                     <Link href={send ? "/inbox" : "/inbox/send"}

@@ -1,5 +1,7 @@
 import {ApiUser} from "@/types/user";
 import {ICalendarEvent} from "@/components/calendar/interfaces/calendar-overview-interfaces";
+import {ApiGroupWithMembers} from "@/types/groups";
+import {notifications} from ".prisma/client";
 
 export interface IResponse {
     status: "success" | "error" | "fail";
@@ -9,22 +11,18 @@ export interface IResponse {
 }
 
 export interface ISession extends IResponse {
+    message: "Authorized" | "Unauthorized";
     data: {
-        user: {
-            id: string,
-            username: string,
-            email: string,
-        }
+        user: ApiUser | null
     }
 }
 
-/*
-{
-  "status": "fail",
-  "message": "User not found",
-  "errors": null
+export interface IUsersResponse extends IResponse {
+    data: {
+        users: ApiUser[]
+    }
 }
- */
+
 export interface IUserResponse extends IResponse {
     data: {
         user: ApiUser
@@ -35,5 +33,28 @@ export interface IUserResponse extends IResponse {
 export interface ICalendarEvents extends IResponse {
     data: {
         events: ICalendarEvent[]
+    }
+}
+
+export interface IGroupsResponse extends IResponse {
+    data: {
+        own: ApiGroupWithMembers[],
+        all: ApiGroupWithMembers[]
+    }
+}
+
+export interface IGroupsPostResponse extends IResponse {
+    data: {
+        group: ApiGroupWithMembers
+    }
+}
+
+export type ApiNotification = notifications & {
+    from: ApiUser,
+}
+
+export interface INotificationsResponse extends IResponse {
+    data: {
+        notifications: ApiNotification[]
     }
 }

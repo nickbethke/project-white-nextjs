@@ -1,5 +1,4 @@
-import NextAuth from "next-auth"
-import {User as TypeUser} from "@/types/user";
+import {NextAuthOptions} from "next-auth";
 
 declare module "next-auth" {
     /**
@@ -18,4 +17,9 @@ declare module "next-auth" {
         username: string
         email: string
     }
+
+    function useSession(): [Session, boolean]
+
+    function getServerSession(options: NextAuthOptions): Promise<Session>
+
 }

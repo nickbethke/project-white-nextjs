@@ -1,14 +1,14 @@
 import {authOptions} from "@/lib/auth";
 import {getServerSession} from "next-auth";
-import {redirect, useRouter} from "next/navigation";
+import {redirect} from "next/navigation";
 import Gravatar from "@/components/gravatar";
 import {Separator} from "@/components/ui/separator";
-import Link from "next/link";
-import {Input} from "@/components/ui/input";
-import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Table, TableBody, TableCaption, TableCell, TableRow} from "@/components/ui/table";
 import {prismaDB} from "@/lib/prisma";
 import {dateTimeFormatted} from "@/lib/utils";
+import {user_role} from ".prisma/client";
+import {Roles} from "@/lib/constants/roles";
+import {Badge} from "@/components/ui/badge";
 
 const ProfilePage = async () => {
 
@@ -31,8 +31,11 @@ const ProfilePage = async () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold flex gap-2 items-baseline">
+            <h1 className="text-2xl font-bold flex gap-2 items-center">
                 Profile
+                <Badge variant={user.user_role === user_role.superadmin ? 'destructive' : 'outline'}>
+                    {Roles[user.user_role]}
+                </Badge>
             </h1>
             <Separator/>
             <div className="p-4">

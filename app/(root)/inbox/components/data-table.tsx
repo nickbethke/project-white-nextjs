@@ -1,21 +1,8 @@
 "use client"
 
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-    getPaginationRowModel,
-} from "@tanstack/react-table"
+import {ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable,} from "@tanstack/react-table"
 
-import {
-    Table,
-    TableBody,
-    TableCell, TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {NotificationDataTableRow} from "@/app/(root)/inbox/components/notification-data-table-row";
 import React from "react";
 import {Button} from "@/components/ui/button";

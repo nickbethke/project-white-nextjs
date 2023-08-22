@@ -1,10 +1,9 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
-import { X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import React, {useEffect, useState} from "react";
+import {X} from "lucide-react";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 
 import _ from "lodash";
 

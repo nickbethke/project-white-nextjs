@@ -2,10 +2,18 @@ import {ChevronRight} from "lucide-react";
 import {redirect} from "next/navigation";
 import {prismaDB} from "@/lib/prisma";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import ProfileButton from "@/components/profile-button";
 import Link from "next/link";
 import {Separator} from "@/components/ui/separator";
 import React from "react";
+import {Metadata} from "next";
+import ReactMarkdown from "react-markdown";
+
+export function generateMetadata(): Metadata {
+    return {
+        title: `Inbox ▫️ Notification |️ ${process.env.NEXT_PUBLIC_APP_NAME}`,
+        description: 'Inbox',
+    }
+}
 
 export default async function NotificationViewPage({params}: { params: { notificationId: string } }) {
 
@@ -38,7 +46,7 @@ export default async function NotificationViewPage({params}: { params: { notific
                 <Link href="/inbox">Inbox</Link><ChevronRight size={16}/><span>Notification</span>
             </h1>
             <Separator/>
-            <Card>
+            <Card className="mt-4">
                 <CardHeader>
                     <CardTitle>
                         {notification.subject}
@@ -57,7 +65,8 @@ export default async function NotificationViewPage({params}: { params: { notific
                     </div>
                     <Separator/>
                     <div className="p-4 border rounded-md">
-                        {notification.content}
+                        <iframe src={`/notifications/${notification.id}/renderContent`}
+                                className="w-full min-h-[50vh] border-0 bg-background"/>
                     </div>
                 </CardContent>
             </Card>

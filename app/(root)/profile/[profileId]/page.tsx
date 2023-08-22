@@ -5,8 +5,10 @@ import {prismaDB} from "@/lib/prisma";
 import {Separator} from "@/components/ui/separator";
 import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table";
 import {dateTimeFormatted} from "@/lib/utils";
-import ProfileButton from "@/components/profile-button";
 import Gravatar from "@/components/gravatar";
+import {Badge} from "@/components/ui/badge";
+import {Roles} from "@/lib/constants/roles";
+import {user_role} from ".prisma/client";
 
 export default async function ProfileView({params}: { params: { profileId: string } }) {
 
@@ -32,8 +34,11 @@ export default async function ProfileView({params}: { params: { profileId: strin
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold flex gap-2 items-baseline">
+            <h1 className="text-2xl font-bold flex gap-2 items-center">
                 Profile - {user.username}
+                <Badge variant={user.user_role === user_role.superadmin ? 'destructive' : 'outline'}>
+                    {Roles[user.user_role]}
+                </Badge>
             </h1>
             <Separator/>
             <div className="p-4">

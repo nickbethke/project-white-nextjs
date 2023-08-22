@@ -1,5 +1,3 @@
-import {users} from "@prisma/client";
-
 export interface ICalendarOverviewProps {
     className: string,
 

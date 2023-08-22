@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.2.0",
-    "@prisma/client": "^5.1.1",
+    "@prisma/client": "^5.2.0",
     "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-context-menu": "^2.1.4",
     "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-label": "^2.0.2",
@@ -20,6 +21,7 @@
     "@radix-ui/react-select": "^1.2.2",
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
     "@react-email/container": "0.0.8",
     "@react-email/html": "0.0.4",
     "@react-email/img": "0.0.5",
@@ -34,6 +36,7 @@
     "@types/react-gravatar": "^2.6.10",
     "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
+    "babel-node": "^0.0.1-security",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -53,8 +56,9 @@
     "next-auth": "^4.22.5",
     "next-themes": "^0.2.1",
     "postcss": "8.4.27",
-    "prisma": "^5.1.1",
+    "prisma": "^5.2.0",
     "react": "18.2.0",
+    "react-animate-height": "^3.2.2",
     "react-dom": "18.2.0",
     "react-email": "1.9.4",
     "react-hook-form": "^7.45.4",
@@ -65,12 +69,14 @@
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.6",
     "typescript": "5.1.6",
+    "ws": "^8.13.0",
     "zod": "^3.21.4",
     "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/js-cookie": "^3.0.3",
-    "@types/mousetrap": "^1.6.11"
+    "@types/mousetrap": "^1.6.11",
+    "@types/ws": "^8.5.5"
   }
 }

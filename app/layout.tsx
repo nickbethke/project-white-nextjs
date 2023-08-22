@@ -2,11 +2,11 @@
 
 import './globals.css'
 import {Inter} from 'next/font/google'
-import {ToastProvider} from "@/lib/providers/toast-provider";
-import {ThemeProvider} from "@/lib/providers/theme-provider";
+import {ToastProvider} from "@/components/providers/toast-provider";
+import {ThemeProvider} from "@/components/providers/theme-provider";
 import React from "react";
 import {SessionProvider} from "next-auth/react";
-import {CalendarEventProvider} from "@/lib/providers/calendar-event-provider";
+import {CalendarEventProvider} from "@/components/providers/calendar-event-provider";
 
 const inter = Inter({subsets: ['latin']})
 
@@ -16,7 +16,12 @@ export default function RootLayout({children,}: { children: React.ReactNode }) {
         <head>
             <meta charSet="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>Project White</title>
+            <title>{process.env.NEXT_PUBLIC_APP_NAME}</title>
+            <link rel="icon" href="/favicon.ico"/>
+            <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+            <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+            <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+            <link rel="manifest" href="/site.webmanifest"/>
         </head>
         <body className={inter.className}>
         <SessionProvider>

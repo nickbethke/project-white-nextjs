@@ -4,7 +4,6 @@ import moment from "moment";
 import {Separator} from "@/components/ui/separator";
 import Link from "next/link";
 import {uniqueId} from "lodash";
-import ReactMarkdown from "react-markdown";
 import {Modal} from "@/components/ui/modal";
 
 const CalendarEventModal: React.FC = () => {

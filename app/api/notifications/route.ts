@@ -3,7 +3,6 @@ import {getErrorResponse, getResponse} from "@/lib/utils";
 import {prismaDB} from "@/lib/prisma";
 import {authOptions} from "@/lib/auth";
 import {getServerSession} from "next-auth";
-import {notification_status} from "@prisma/client";
 
 export async function GET() {
 
@@ -16,6 +15,9 @@ export async function GET() {
     const notifications = await prismaDB.notifications.findMany({
         where: {
             to_id: session.user.id
+        },
+        include: {
+            from: true
         }
     });
 

@@ -3,13 +3,12 @@
 import {RegisterUserInput, RegisterUserSchema} from "@/lib/validations/user.schema";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage, Form} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import {useRouter} from "next/navigation";
-import {Separator} from "@/components/ui/separator";
-import axios, {AxiosError} from "axios";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 

@@ -1,4 +1,3 @@
-import {MainNav} from "@/components/main-nav";
 import React from "react";
 import {UserButton} from "@/components/user-button";
 import {getServerSession} from "next-auth";
