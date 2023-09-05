@@ -2,24 +2,42 @@ import {getErrorResponse, getResponse} from "@/lib/utils";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/lib/auth";
 import {prismaDB} from "@/lib/prisma";
-import {user_role} from ".prisma/client";
 import {NextRequest} from "next/server";
+import {getUserSsr} from "@/lib/ssr/user";
+import {Permissions} from "@/lib/user";
 
-async function checkAuth(checkAdmin = true) {
+const AuthTypes: Record<string, Permissions> = {
+    create: Permissions.group_create,
+    read: Permissions.group_read,
+    update: Permissions.group_update,
+    delete: Permissions.group_delete,
+    member_create: Permissions.group_member_create,
+    member_read: Permissions.group_member_read,
+    member_update: Permissions.group_member_update,
+    member_delete: Permissions.group_member_delete,
+}
+
+type AuthType = keyof typeof AuthTypes;
+
+async function checkAuth(authType: AuthType | AuthType[] | false, checkAdmin = true) {
     const session = await getServerSession(authOptions);
 
-    if (!session) return false
+    if (!session) return null
 
-    const user = await prismaDB.users.findUnique({
-        where: {
-            id: session.user.id
+    const user = await getUserSsr(session.user.id);
+
+    if (!user) return null
+    if (checkAdmin && authType !== false) {
+        if (typeof authType === "string") {
+            if (!user.permission(AuthTypes[authType])) return null
         }
-    });
 
-    if (!user) return false
-
-    if (checkAdmin && user.user_role !== user_role.admin && user.user_role !== user_role.superadmin) return false
-
+        if (Array.isArray(authType)) {
+            for (const type of authType) {
+                if (!user.permission(AuthTypes[type])) return null
+            }
+        }
+    }
     return session
 
 }
@@ -91,7 +109,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-    const session = await checkAuth();
+    const session = await checkAuth([Permissions.group_create, Permissions.group_member_create]);
 
     if (!session) return getErrorResponse(401, "Unauthorized");
 
@@ -127,7 +145,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-    const session = await checkAuth();
+    const session = await checkAuth(Permissions.group_delete);
     if (!session) return getErrorResponse(401, "Unauthorized");
 
     const {group_id} = await req.json();

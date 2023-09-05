@@ -10,9 +10,18 @@ import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem,} from "@
 import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {ApiUser} from "@/types/user";
 import Gravatar from "@/components/gravatar";
+import axios from "axios";
+import {ApiGroup, ApiGroupWithMembers} from "@/types/groups";
+import {IGroupsResponse} from "@/types/axios-responses";
+import {GroupBadge} from "@/components/group-badge";
+
+type Result = {
+    type: "user" | "group"
+    value: string
+}
 
 type UserComboboxProps = {
-    onChange: (value: string) => void
+    onChange: (value: Result) => void
 }
 
 export function UserCombobox({onChange}: UserComboboxProps) {
@@ -20,19 +29,43 @@ export function UserCombobox({onChange}: UserComboboxProps) {
     const [value, setValue] = React.useState("");
     const [search, setSearch] = React.useState("");
     const [users, setUsers] = React.useState<ApiUser[]>([]);
+    const [groups, setGroups] = React.useState<ApiGroupWithMembers[]>([]);
+
+    const [toGroup, setToGroup] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        fetch('/api/users')
-            .then((res) => res.json())
-            .then((data) => {
-                setUsers(data.data.users);
-            });
+        axios.get('/api/users').then((res) => {
+            setUsers(res.data.data.users);
+        });
+
+        axios.get<IGroupsResponse>('/api/users/groups').then((res) => {
+            setGroups(res.data.data.all);
+        });
     }, []);
 
-    if (!users) return null;
+    if (!users || !groups) {
+        return <div>Loading...</div>
+    }
 
     const onSearch: FormEventHandler<HTMLInputElement> = (e) => {
         setSearch(e.currentTarget.value);
+    }
+
+    const inputElement = () => {
+        if (toGroup) {
+            const group = groups.find((group) => group.name.toLowerCase() === value);
+            if (!group) return "";
+            return <GroupBadge group={group}/>
+        }
+        return (<>
+            {value
+                ? <Gravatar email={users.find((user) => user.username === value)?.email ?? ""}
+                            className="mr-2 h-4 w-4"/>
+                : ""}
+            {value
+                ? users.find((user) => user.username === value)?.username
+                : "Select user..."}
+        </>);
     }
 
 
@@ -46,13 +79,7 @@ export function UserCombobox({onChange}: UserComboboxProps) {
                     className={cn("w-full flex justify-between items-center", open && "outline-none ring-2 ring-ring ring-offset-2")}
                 >
                     <div className="flex items-center">
-                        {value
-                            ? <Gravatar email={users.find((user) => user.username === value)?.email ?? ""}
-                                        className="mr-2 h-4 w-4"/>
-                            : ""}
-                        {value
-                            ? users.find((user) => user.username === value)?.username
-                            : "Select user..."}
+                        {inputElement()}
                     </div>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                 </Button>
@@ -68,7 +95,11 @@ export function UserCombobox({onChange}: UserComboboxProps) {
                                 onSelect={(currentValue) => {
                                     setValue(currentValue === value ? "" : currentValue)
                                     setOpen(false)
-                                    onChange(currentValue === value ? "" : users.find((user) => user.username === currentValue)?.id ?? "")
+                                    setToGroup(false);
+                                    onChange({
+                                        type: "user",
+                                        value: currentValue === value ? "" : users.find((user) => user.username === currentValue)?.id ?? ""
+                                    })
                                 }}
                                 value={user.username}
                             >
@@ -78,7 +109,7 @@ export function UserCombobox({onChange}: UserComboboxProps) {
                                         value === user.username ? "opacity-100" : "opacity-0"
                                     )}
                                 />
-                                <Gravatar email={user.email} className="mr-2 h-8 w-8"/>
+                                <Gravatar email={user.email} className="mr-2 h-6 w-6"/>
                                 <div className="flex flex-col">
                                     <span>{user.username}</span><span
                                     className="text-muted-foreground text-xs">{user.email}</span>
@@ -87,28 +118,29 @@ export function UserCombobox({onChange}: UserComboboxProps) {
                         ))}
                     </CommandGroup>
                     <CommandGroup heading="Groups">
-                        <CommandItem
-                            key={1}
-                            onSelect={(currentValue) => {
-                                setValue(currentValue === value ? "" : currentValue)
-                                setOpen(false)
-                                onChange(currentValue === value ? "" : currentValue)
-                            }}
-                            value="group1"
-                        >
-                            <Check
-                                className={cn(
-                                    "mr-2 h-4 w-4",
-                                    value === "group1" ? "opacity-100" : "opacity-0"
-                                )}
-                            />
-                            <div className="flex flex-col">
-                                <span>Group 1</span><span
-                                className="text-muted-foreground text-xs">
-                                    Group 1 description
-                                </span>
-                            </div>
-                        </CommandItem>
+                        {groups.map((group) => (
+                            <CommandItem
+                                key={group.name.toLowerCase()}
+                                onSelect={(currentValue) => {
+                                    setValue(currentValue === value ? "" : currentValue)
+                                    setOpen(false)
+                                    setToGroup(true);
+                                    onChange({
+                                        type: "group",
+                                        value: currentValue === value ? "" : group.name.toLowerCase()
+                                    })
+                                }}
+                                value={group.name.toLowerCase()}
+                            >
+                                <Check
+                                    className={cn(
+                                        "mr-2 h-4 w-4",
+                                        value === group.name.toLowerCase() ? "opacity-100" : "opacity-0"
+                                    )}
+                                />
+                                <GroupBadge group={group}/>
+                            </CommandItem>
+                        ))}
                     </CommandGroup>
                 </Command>
             </PopoverContent>

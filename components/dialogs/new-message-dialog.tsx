@@ -31,6 +31,8 @@ export const NewMessageDialog: React.FC = () => {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [open, setOpen] = React.useState<boolean>(false);
 
+    const [toGroup, setToGroup] = React.useState<boolean>(false);
+
     const form = useForm<NewNotificationInput>({
         resolver: zodResolver(NewNotificationSchema),
         defaultValues: {
@@ -50,7 +52,11 @@ export const NewMessageDialog: React.FC = () => {
     const onSubmit = async (data: NewNotificationInput) => {
         setLoading(true);
         try {
-            const result = await axios.post('/api/notifications', data);
+            let toType = 'user';
+            if (toGroup) {
+                toType = 'group';
+            }
+            const result = await axios.post('/api/notifications', {...data, to_type: toType});
 
             if (result.data.status === 'success') {
                 toast.success("Successfully sent.");
@@ -91,7 +97,8 @@ export const NewMessageDialog: React.FC = () => {
                                         <FormLabel>To</FormLabel>
                                         <FormControl>
                                             <UserCombobox onChange={(value) => {
-                                                form.setValue('to_id', value);
+                                                form.setValue('to_id', value.value);
+                                                setToGroup(value.type === 'group');
                                             }}/>
                                         </FormControl>
                                         <FormMessage/>

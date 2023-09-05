@@ -1,5 +1,4 @@
 import {cn} from "@/lib/utils";
-import {Roles} from "@/lib/constants/roles";
 import {Badge, BadgeVariant} from "@/components/ui/badge";
 import {UserRole} from "@/types/user";
 import {user_roles} from "@prisma/client";

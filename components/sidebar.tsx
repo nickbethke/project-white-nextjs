@@ -2,7 +2,19 @@
 
 import {usePathname} from "next/navigation";
 import React from "react";
-import {Boxes, Calendar, Cog, Group, Home, Inbox, ListTodo, Settings, User, Users} from "lucide-react";
+import {
+    Boxes,
+    Calendar,
+    Cog,
+    Group,
+    Home,
+    Inbox,
+    ListTodo,
+    MessageCircleIcon,
+    Settings,
+    User,
+    Users
+} from "lucide-react";
 import {uniqueId} from "lodash";
 import {SidebarRoute} from "@/types/ui-types";
 import {SidebarItem} from "@/components/sidebar-item";
@@ -22,8 +34,8 @@ function Sidebar({className, ...props}: React.HTMLAttributes<HTMLElement>) {
     }, {
         href: `/inbox`,
         label: "Inbox",
-        active: pathname === `/inbox` || pathname === `/inbox/status/archived` || pathname === `/inbox/type/request` || pathname === `/inbox/type/alert`,
-        icon: <Inbox/>,
+        active: pathname === `/inbox` || pathname.startsWith(`/inbox/`),
+        icon: <MessageCircleIcon/>,
         hasSeparator: true,
         canAccess: user.permission(Permissions.notification_read),
     }, {
@@ -63,14 +75,21 @@ function Sidebar({className, ...props}: React.HTMLAttributes<HTMLElement>) {
             label: "General",
             active: pathname === `/settings`,
             icon: <Cog/>,
+            hasSeparator: true,
         }, {
             href: `/settings/groups`,
             label: "Groups",
-            active: pathname === `/settings/groups`,
-            hasSeparator: true,
+            active: pathname === `/settings/groups` || pathname.startsWith(`/settings/groups/`),
             icon: <Group/>,
             canAccess: user.permission(Permissions.group_read),
 
+        }, {
+            href: `/settings/user-roles`,
+            label: "User Roles",
+            active: pathname === `/settings/user-roles`,
+            icon: <Users/>,
+            canAccess: user.permission(Permissions.user_role_read),
+            hasSeparator: true,
         }, {
             href: `/settings/emails`,
             label: "Emails",

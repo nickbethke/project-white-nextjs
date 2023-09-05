@@ -6,9 +6,18 @@ import {dateTimeFormatted} from "@/lib/utils";
 import Link from "next/link";
 import {ApiUser} from "@/types/user";
 import Gravatar from "@/components/gravatar";
-import {ChevronDown, ChevronsUpDown, ChevronUp} from "lucide-react";
-import {Roles} from "@/lib/constants/roles";
+import {ChevronDown, ChevronsUpDown, ChevronUp, MoreHorizontal} from "lucide-react";
 import {RoleBadge} from "@/components/role-badge";
+import {Button} from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import toast from "react-hot-toast";
 
 function sortArrow({column}: { column: Column<ApiUser> }) {
     if (column.getIsSorted() === "desc") {
@@ -119,6 +128,40 @@ export const userColumns: ColumnDef<ApiUser>[] = [
                     <div className="ml-2">{date}</div>
                 </div>
             )
+        }
+    }, {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({row}) => {
+            const user = row.original;
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4"/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                            onClick={async () => {
+                                await navigator.clipboard.writeText(user.id)
+                                toast.success('Copied user ID to clipboard.')
+                            }}
+                        >
+                            Copy ID
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem>
+                            <Link href={`/profile/${user.id}`}>
+                                View Profile
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )
+
         }
     }
 ]

@@ -20,14 +20,13 @@ export async function GET(req: NextRequest, {params}: { params: { notificationId
         return getErrorResponse(404, "Status not found");
     }
 
-    const notifications = await prismaDB.notifications.findMany({
+    const notification = await prismaDB.notifications.findUnique({
         where: {
-            to_id: session.user.id,
-            status
+            id: params.notificationId
         }
     });
 
-    return getResponse(200, "Notifications with status", notifications);
+    return getResponse(200, "Notifications with status", {notification});
 }
 
 export async function DELETE(req: NextRequest, {params}: { params: { notificationId: string } }) {
@@ -40,18 +39,18 @@ export async function DELETE(req: NextRequest, {params}: { params: { notificatio
 
     const notificationId = params.notificationId;
 
-    const notifications = await prismaDB.notifications.deleteMany({
+    const notification = await prismaDB.notifications.delete({
         where: {
             to_id: session.user.id,
             id: notificationId
         }
     });
 
-    if (notifications.count === 0) {
+    if (!notification) {
         return getErrorResponse(404, "Notification not found");
     }
 
-    return getResponse(200, "Notifications with status deleted", notifications);
+    return getResponse(200, "Notifications with status deleted", {notification});
 }
 
 export async function PATCH(req: NextRequest, {params}: { params: { notificationId: string } }) {
@@ -65,9 +64,8 @@ export async function PATCH(req: NextRequest, {params}: { params: { notification
     const notificationId = params.notificationId;
 
     const {status} = await req.json();
-    console.log(status);
 
-    const notifications = await prismaDB.notifications.updateMany({
+    const notification = await prismaDB.notifications.update({
         where: {
             to_id: session.user.id,
             id: notificationId
@@ -77,9 +75,9 @@ export async function PATCH(req: NextRequest, {params}: { params: { notification
         }
     });
 
-    if (notifications.count === 0) {
+    if (!notification) {
         return getErrorResponse(404, "Notification not found");
     }
 
-    return getResponse(200, "Notifications with status updated", {});
+    return getResponse(200, "Notifications with status updated", {notification});
 }

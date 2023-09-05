@@ -1,77 +1,33 @@
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/lib/auth";
 import {redirect} from "next/navigation";
-import {prismaDB} from "@/lib/prisma";
-import {Separator} from "@/components/ui/separator";
-import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table";
-import {dateTimeFormatted} from "@/lib/utils";
-import Gravatar from "@/components/gravatar";
-import {Badge} from "@/components/ui/badge";
-import {Roles} from "@/lib/constants/roles";
-import {user_role} from ".prisma/client";
+import {getUserSsr} from "@/lib/ssr/user";
+import {Profile} from "../components/profile-component";
+import {checkSessionAndPermissions, ISessionCheckAndPermissionsError} from "@/lib/session-check";
+import {Permissions} from "@/lib/user";
 
 export default async function ProfileView({params}: { params: { profileId: string } }) {
 
-    const user = await prismaDB.users.findUnique({
-        where: {
-            id: params.profileId
+    const auth = await checkSessionAndPermissions([Permissions.user_read]);
+
+    if (!auth || auth.error) {
+        if (auth.error === ISessionCheckAndPermissionsError.noSession) {
+            redirect('/auth/signin');
         }
-    });
+        if (auth.error === ISessionCheckAndPermissionsError.noPermission) {
+            redirect('/');
+        }
+    } else {
+        const {session} = auth;
 
-    const session = await getServerSession(authOptions);
+        if (session.user.id === params.profileId) {
+            redirect('/profile');
+        }
+    }
 
-    if (!session) {
+    const viewedUser = await getUserSsr(params.profileId);
+
+    if (!viewedUser) {
         redirect('/signin');
     }
 
-    if (session.user.id === params.profileId) {
-        redirect('/profile');
-    }
-
-    if (!user) {
-        redirect('/signin');
-    }
-
-    return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold flex gap-2 items-center">
-                Profile - {user.username}
-                <Badge variant={user.user_role === user_role.superadmin ? 'destructive' : 'outline'}>
-                    {Roles[user.user_role]}
-                </Badge>
-            </h1>
-            <Separator/>
-            <div className="p-4">
-                <Gravatar email={user.email} size={128}/>
-            </div>
-            <Table>
-                <TableBody>
-                    <TableRow>
-                        <TableCell className="font-bold">Name</TableCell>
-                        <TableCell>{user.username}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell className="font-bold">Email</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell className="font-bold">First Name</TableCell>
-                        <TableCell>{user.firstname}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell className="font-bold">Last Name</TableCell>
-                        <TableCell>{user.lastname}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell className="font-bold">ID</TableCell>
-                        <TableCell>{user.id}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell className="font-bold">Created At</TableCell>
-                        <TableCell>{dateTimeFormatted(user.createdAt)}</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    )
+    return <Profile user={viewedUser}/>;
 }

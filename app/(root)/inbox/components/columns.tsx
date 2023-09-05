@@ -48,14 +48,25 @@ export const notificationColumns: ColumnDef<notifications & { from: users, to: u
                 day: 'numeric'
             }).format(cell.row.original.createdAt)
             return (
-                <div className="flex items-center">
-                    <div className="ml-2">{date}</div>
-                </div>
+                <Link href={`/inbox/view/${cell.row.original.id}`}>
+                    <div className="flex items-center">
+                        <div className="ml-2">{date}</div>
+                    </div>
+                </Link>
             )
         }
     }, {
         accessorKey: 'subject',
         header: 'Subject',
+        cell: (cell) => {
+            return (
+                <Link href={`/inbox/view/${cell.row.original.id}`}>
+                    <div className="flex items-center">
+                        {cell.row.original.subject}
+                    </div>
+                </Link>
+            )
+        }
     },
     {
         id: 'from',
@@ -64,7 +75,9 @@ export const notificationColumns: ColumnDef<notifications & { from: users, to: u
         cell: ({row}) => {
             const notification = row.original;
             return (
-                <ProfileButton user_id={notification.from.id}/>
+                <Link href={`/inbox/view/${notification.id}`}>
+                    <ProfileButton user_id={notification.from.id}/>
+                </Link>
             )
         }
     },
@@ -75,7 +88,9 @@ export const notificationColumns: ColumnDef<notifications & { from: users, to: u
         cell: ({row}) => {
             const notification = row.original;
             return (
-                <ProfileButton user_id={notification.to.id}/>
+                <Link href={`/inbox/view/${notification.id}`}>
+                    <ProfileButton user_id={notification.to.id}/>
+                </Link>
             )
         }
     },
@@ -84,9 +99,11 @@ export const notificationColumns: ColumnDef<notifications & { from: users, to: u
         header: 'Type',
         cell: (cell) => {
             return (
-                <div className="flex items-center">
-                    <div className="ml-2">{notificationTypes[cell.row.original.type]}</div>
-                </div>
+                <Link href={`/inbox/view/${cell.row.original.id}`}>
+                    <div className="flex items-center">
+                        <div className="ml-2">{notificationTypes[cell.row.original.type]}</div>
+                    </div>
+                </Link>
             )
         }
     }, {

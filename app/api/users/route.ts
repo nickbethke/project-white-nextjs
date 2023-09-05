@@ -1,9 +1,15 @@
 import {NextRequest} from "next/server";
 import {getErrorResponse, getResponse} from "@/lib/utils";
 import {prismaDB} from "@/lib/prisma";
-import {authOptions} from "@/lib/auth";
+import {authOptions, hashPassword} from "@/lib/auth";
 import {getServerSession} from "next-auth";
 import {ApiUser} from "@/types/user";
+import {checkSessionAndPermissions, ISessionCheckAndPermissionsError} from "@/lib/session-check";
+import {Permissions} from "@/lib/user";
+import {NewUserInput} from "@/lib/validations/new-user.schema";
+import {Mail} from "@/lib/mail";
+import {render} from "@react-email/render";
+import ActivationMail from "@/emails/activation-mail";
 
 enum UserSearchType {
     user = "user",
@@ -19,7 +25,6 @@ class UserSearchQuery {
     constructor(searchQuery: string) {
         this.searchQuery = searchQuery;
         this.type = this.determineSearchType(searchQuery);
-        console.log(this.type);
         this.searchQuery = this.searchQuery.replace(`${this.type}:`, "");
     }
 
@@ -227,4 +232,56 @@ export async function GET(req: NextRequest) {
         }
     );
     return getResponse(200, "User GET", {users});
+}
+
+export async function POST(req: NextRequest) {
+    const auth = await checkSessionAndPermissions(Permissions.user_create);
+
+    if (auth.error) {
+        if (auth.error === ISessionCheckAndPermissionsError.noSession)
+            return getErrorResponse(401, "Unauthorized");
+        if (auth.error === ISessionCheckAndPermissionsError.noPermission)
+            return getErrorResponse(403, "Forbidden");
+    }
+
+    const data = (await req.json()).data as NewUserInput;
+
+    console.log(data);
+
+    const {username, firstName, lastName, email, password, passwordConfirm, withActivation, role} = data;
+
+    if (password !== passwordConfirm) {
+        return getErrorResponse(400, "Passwords do not match");
+    }
+
+    if (!username)
+        return getErrorResponse(400, "Username is required");
+
+    const activation_token = await hashPassword(email + Date.now());
+
+    const user = await prismaDB.users.create({
+        data: {
+            username: username,
+            firstname: firstName,
+            lastname: lastName,
+            email,
+            password: await hashPassword(password),
+            user_role: {
+                connect: {
+                    id: role
+                }
+            },
+            activation_token: withActivation ? activation_token : "",
+        }
+    });
+
+    if (withActivation) {
+        await Mail.sendEmail({
+            to: user.email,
+            subject: "Project White - Activation",
+            html: render(ActivationMail(user.activation_token, user.email)),
+        });
+    }
+
+    return getResponse(200, "User POST", {user});
 }

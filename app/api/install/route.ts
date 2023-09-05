@@ -40,18 +40,19 @@ export async function GET() {
         group_member_update: true,
         group_member_delete: true,
     }
-
-    await prismaDB.user_roles.create({
-        data: {
-            name: "SuperAdmin",
-            readable: "Super Administrator",
-            permissions: {
-                create: {
-                    ...superAdminPermission
+    if (!await prismaDB.user_roles.findUnique({where: {name: "SuperAdmin"}})) {
+        await prismaDB.user_roles.create({
+            data: {
+                name: "SuperAdmin",
+                readable: "Super Administrator",
+                permissions: {
+                    create: {
+                        ...superAdminPermission
+                    }
                 }
             }
-        }
-    });
+        });
+    }
     const adminPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
         ...superAdminPermission
         , ...{
@@ -66,17 +67,52 @@ export async function GET() {
         }
     }
 
-    await prismaDB.user_roles.create({
-        data: {
-            name: "Admin",
-            readable: "Administrator",
-            permissions: {
-                create: {
-                    ...adminPermission
+    if (!await prismaDB.user_roles.findUnique({where: {name: "Admin"}})) {
+        await prismaDB.user_roles.create({
+            data: {
+                name: "Admin",
+                readable: "Administrator",
+                permissions: {
+                    create: {
+                        ...adminPermission
+                    }
                 }
             }
+        });
+    }
+
+
+    const developerPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
+        ...adminPermission
+        , ...{
+            user_create: true,
+            user_read: true,
+            user_update: false,
+            user_delete: false,
+            group_create: true,
+            group_read: false,
+            group_update: false,
+            group_delete: false,
+            group_member_create: false,
+            group_member_read: false,
+            group_member_update: false,
+            group_member_delete: false,
         }
-    });
+    }
+
+    if (!await prismaDB.user_roles.findUnique({where: {name: "Developer"}})) {
+        await prismaDB.user_roles.create({
+            data: {
+                name: "Developer",
+                readable: "Developer",
+                permissions: {
+                    create: {
+                        ...developerPermission
+                    }
+                }
+            }
+        });
+    }
 
     const userPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
         ...adminPermission
@@ -89,17 +125,19 @@ export async function GET() {
         }
     }
 
-    await prismaDB.user_roles.create({
-        data: {
-            name: "User",
-            readable: "User",
-            permissions: {
-                create: {
-                    ...userPermission
+    if (!await prismaDB.user_roles.findUnique({where: {name: "User"}})) {
+        await prismaDB.user_roles.create({
+            data: {
+                name: "User",
+                readable: "User",
+                permissions: {
+                    create: {
+                        ...userPermission
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     return getResponse(200, "OK", null);
 }

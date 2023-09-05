@@ -15,6 +15,7 @@ import React from "react";
 import {Button} from "@/components/ui/button";
 import {ApiUser} from "@/types/user";
 import {useUser} from "@/components/providers/user-provider";
+import {Permissions} from "@/lib/user";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[],
@@ -44,27 +45,43 @@ export function DataTable<TValue>({columns, data, loading}: DataTableProps<ApiUs
         }
     })
 
-    const rows = table.getRowModel().rows?.length ? (
-        table.getRowModel().rows.map((row) => (
-            <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-            >
-                {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    const rows = () => {
+        if (loading) {
+            return (
+                <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                        Loading...
                     </TableCell>
-                ))}
-            </TableRow>
+                </TableRow>
+            )
+        } else if (table.getRowModel().rows?.length) {
+            return (
+                table.getRowModel().rows.map((row) => (
+                    <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        onClick={() => row.toggleSelected()}
+                        className="cursor-pointer"
+                    >
+                        {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                        ))}
+                    </TableRow>
 
-        ))
-    ) : (
-        <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-            </TableCell>
-        </TableRow>
-    )
+                ))
+            )
+        } else {
+            return (
+                <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                        No results.
+                    </TableCell>
+                </TableRow>
+            )
+        }
+    }
 
 
     return (<>
@@ -76,10 +93,12 @@ export function DataTable<TValue>({columns, data, loading}: DataTableProps<ApiUs
                 <Button variant="outline" disabled={Object.entries(rowSelection).length === 0}>
                     Send Email
                 </Button>
-                <Button variant="outline" disabled={Object.entries(rowSelection).length === 0}>
-                    Send Notification
-                </Button>
-                {user.isAdmin && (
+                {user.permission(Permissions.notification_create) && (
+                    <Button variant="outline" disabled={Object.entries(rowSelection).length === 0}>
+                        Send Notification
+                    </Button>
+                )}
+                {user.permission(Permissions.user_delete) && (
                     <Button variant="destructive" disabled={Object.entries(rowSelection).length === 0}>
                         Delete
                     </Button>
@@ -126,13 +145,7 @@ export function DataTable<TValue>({columns, data, loading}: DataTableProps<ApiUs
                             ))}
                         </TableHeader>
                         <TableBody>
-                            {loading ? (
-                                <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        Loading...
-                                    </TableCell>
-                                </TableRow>
-                            ) : rows}
+                            {rows()}
                         </TableBody>
                         <TableHeader className="border-t">
                             {table.getHeaderGroups().map((headerGroup) => (

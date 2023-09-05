@@ -24,7 +24,7 @@ export type ApiUserRole = {
     readable: string;
     createdAt: Date;
     updatedAt: Date;
-    permissions: ApiPermission[];
+    permissions: ApiPermission;
 }
 
 export interface ApiPermission extends Prisma.user_role_permissionsUncheckedCreateWithoutUser_roleInput {

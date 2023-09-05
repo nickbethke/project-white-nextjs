@@ -19,6 +19,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useUser} from "@/components/providers/user-provider";
 import {Permissions} from "@/lib/user";
+import {GroupBadge} from "@/components/group-badge";
 
 type SettingsGroupsFormProps = {}
 const SettingsGroupsForm: React.FC<SettingsGroupsFormProps> = () => {
@@ -230,17 +231,7 @@ const GroupView: React.FC<{ group: ApiGroupWithMembers }> = ({group}) => {
             className="w-full py-8 justify-start items-center"
         >
             <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2">
-                    <div
-                        className="flex items-center justify-center w-9 h-9 rounded-full bg-accent-foreground">
-                        <span className="text-accent text-xl font-bold">{group.name[0]}</span>
-                    </div>
-                    <div className="flex flex-col text-left">
-                        <span className="font-bold">{group.name}</span>
-                        <span
-                            className="text-xs text-muted-foreground">{group.group_members.length} member(s)</span>
-                    </div>
-                </div>
+                <GroupBadge group={group} size="lg"/>
                 <MembersView group={group}/>
             </div>
         </Button>

@@ -3,9 +3,13 @@ import {Metadata} from "next";
 import {redirect} from "next/navigation";
 import React from "react";
 import {ChevronRight} from "lucide-react";
+import {getServerSession} from "next-auth";
+import {authOptions} from "@/lib/auth";
+import {Permissions} from "@/lib/user";
+import {getUserSsr} from "@/lib/ssr/user";
+import {checkSessionAndPermissions, ISessionCheckAndPermissionsError} from "@/lib/session-check";
 
 export async function generateMetadata({params}: { params: { groupId: string } }): Promise<Metadata> {
-    // read route params
     const id = params.groupId;
 
     const group = await prismaDB.groups.findUnique({
@@ -20,6 +24,17 @@ export async function generateMetadata({params}: { params: { groupId: string } }
 }
 
 const GroupViewPage = async ({params}: { params: { groupId: string } }) => {
+
+    const auth = await checkSessionAndPermissions(Permissions.group_create);
+
+    if (auth.error) {
+        if (auth.error === ISessionCheckAndPermissionsError.noSession)
+            redirect('/auth/signin');
+        else if (auth.error === ISessionCheckAndPermissionsError.noPermission)
+            redirect('/settings');
+    }
+
+
     const {groupId} = params;
     const group = await prismaDB.groups.findUnique({
         where: {
@@ -34,7 +49,8 @@ const GroupViewPage = async ({params}: { params: { groupId: string } }) => {
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold flex gap-2 items-center">
-                Settings <ChevronRight className="w-6 h-6 text-muted-foreground"/> Groups <ChevronRight className="w-6 h-6 text-muted-foreground"/> {group?.name}
+                Settings <ChevronRight className="w-6 h-6 text-muted-foreground"/> Groups <ChevronRight
+                className="w-6 h-6 text-muted-foreground"/> {group?.name}
             </h1>
 
         </div>

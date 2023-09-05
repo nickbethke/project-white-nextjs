@@ -36,6 +36,10 @@ export enum Permissions {
     group_member_read = "group_member_read",
     group_member_update = "group_member_update",
     group_member_delete = "group_member_delete",
+    user_roles_create = "user_roles_create",
+    user_roles_read = "user_roles_read",
+    user_roles_update = "user_roles_update",
+    user_roles_delete = "user_roles_delete",
 }
 
 interface IUser extends ApiUser {
@@ -88,14 +92,12 @@ export class User implements IUser {
         return dateTimeFormatted(this.createdAt);
     }
 
-    get role()
-        :
-        string {
+    get role(): string {
         return this.user_role.readable;
     }
 
     permission(permission: Permissions) {
-        console.log(this.user_role.permissions[0][permission]);
-        return this.user_role.permissions[0][permission];
+        return this.user_role.permissions[permission];
     }
 }
+
