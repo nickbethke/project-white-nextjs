@@ -1,143 +1,127 @@
-import {getResponse} from "@/lib/utils";
+import {getErrorResponse, getResponse} from "@/lib/utils";
 import {prismaDB} from "@/lib/prisma";
 import {Prisma} from ".prisma/client";
+import {Permissions, ReadablePermissions} from "@/lib/user";
+import {hashPassword} from "@/lib/auth";
+import {DefaultUserRole} from "@/types/user";
 
 export async function GET() {
 
-    const superAdminPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
-        own_profile_update: true,
-        own_profile_delete: true,
-        user_create: true,
-        user_read: true,
-        user_update: true,
-        user_delete: true,
-        user_role_create: true,
-        user_role_read: true,
-        user_role_update: true,
-        user_role_delete: true,
-        user_role_permission_create: true,
-        user_role_permission_read: true,
-        user_role_permission_update: true,
-        user_role_permission_delete: true,
-        notification_create: true,
-        notification_read: true,
-        notification_update: true,
-        notification_delete: true,
-        option_create: true,
-        option_read: true,
-        option_update: true,
-        option_delete: true,
-        calendar_event_create: true,
-        calendar_event_read: true,
-        calendar_event_update: true,
-        calendar_event_delete: true,
-        group_create: true,
-        group_read: true,
-        group_update: true,
-        group_delete: true,
-        group_member_create: true,
-        group_member_read: true,
-        group_member_update: true,
-        group_member_delete: true,
-    }
-    if (!await prismaDB.user_roles.findUnique({where: {name: "SuperAdmin"}})) {
-        await prismaDB.user_roles.create({
-            data: {
-                name: "SuperAdmin",
-                readable: "Super Administrator",
-                permissions: {
-                    create: {
-                        ...superAdminPermission
-                    }
-                }
+    const permissions: Prisma.permissionsCreateWithoutUser_role_permissionsInput[] = Object.keys(Permissions).map((key) => {
+        return {
+            name: key,
+            readable_name: ReadablePermissions[key as Permissions],
+        }
+    });
+
+    for (const permissionsKey in permissions) {
+        const existingPermission = await prismaDB.permissions.findFirst({
+            where: {
+                name: permissions[permissionsKey].name
             }
         });
-    }
-    const adminPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
-        ...superAdminPermission
-        , ...{
-            user_role_create: false,
-            user_role_read: false,
-            user_role_update: false,
-            user_role_delete: false,
-            user_role_permission_create: false,
-            user_role_permission_read: false,
-            user_role_permission_update: false,
-            user_role_permission_delete: false,
+
+        if (!existingPermission) {
+            await prismaDB.permissions.create({
+                data: permissions[permissionsKey]
+            });
         }
     }
 
-    if (!await prismaDB.user_roles.findUnique({where: {name: "Admin"}})) {
-        await prismaDB.user_roles.create({
-            data: {
-                name: "Admin",
-                readable: "Administrator",
-                permissions: {
-                    create: {
-                        ...adminPermission
-                    }
-                }
-            }
-        });
-    }
+    const dbPermissions = await prismaDB.permissions.findMany();
 
-
-    const developerPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
-        ...adminPermission
-        , ...{
-            user_create: true,
-            user_read: true,
-            user_update: false,
-            user_delete: false,
-            group_create: true,
-            group_read: false,
-            group_update: false,
-            group_delete: false,
-            group_member_create: false,
-            group_member_read: false,
-            group_member_update: false,
-            group_member_delete: false,
+    const superAdminRoleExists = await prismaDB.user_roles.findFirst({
+        where: {
+            name: DefaultUserRole.superadmin
         }
+    });
+
+    if (superAdminRoleExists) {
+        return getErrorResponse(500, "Super admin role already exists");
     }
-
-    if (!await prismaDB.user_roles.findUnique({where: {name: "Developer"}})) {
-        await prismaDB.user_roles.create({
-            data: {
-                name: "Developer",
-                readable: "Developer",
-                permissions: {
-                    create: {
-                        ...developerPermission
-                    }
-                }
-            }
-        });
-    }
-
-    const userPermission: Prisma.user_role_permissionsCreateWithoutUser_roleInput = {
-        ...adminPermission
-        , ...{
-            user_create: false,
-            user_read: false,
-            user_update: false,
-            user_delete: false,
-
+    const superAdminRole = await prismaDB.user_roles.create({
+        data: {
+            name: DefaultUserRole.superadmin,
+            readable_name: "Super Admin",
         }
-    }
+    });
 
-    if (!await prismaDB.user_roles.findUnique({where: {name: "User"}})) {
-        await prismaDB.user_roles.create({
+    for (const permissionKey in dbPermissions) {
+        await prismaDB.user_role_permissions.create({
             data: {
-                name: "User",
-                readable: "User",
-                permissions: {
-                    create: {
-                        ...userPermission
-                    }
-                }
+                user_rolesId: superAdminRole.id,
+                permissionsId: dbPermissions[permissionKey].id
             }
         });
     }
 
-    return getResponse(200, "OK", null);
+    const superAdminUser = await prismaDB.users.create({
+        data: {
+            email: "superadmin@project-white.de",
+            username: "superadmin",
+            firstname: "Super",
+            lastname: "Admin",
+            password: await hashPassword("superadmin"),
+            user_role: {
+                connect: {
+                    id: superAdminRole.id
+                }
+            },
+            activation_token: "",
+        }
+    });
+
+    const adminRoleExists = await prismaDB.user_roles.findFirst({
+        where: {
+            name: DefaultUserRole.admin
+        }
+    });
+
+    if (adminRoleExists) {
+        return getErrorResponse(500, "Admin role already exists");
+    }
+
+    const adminRole = await prismaDB.user_roles.create({
+        data: {
+            name: DefaultUserRole.admin,
+            readable_name: "Admin",
+        }
+    });
+
+    const userRoleExists = await prismaDB.user_roles.findFirst({
+        where: {
+            name: DefaultUserRole.user
+        }
+    });
+
+    if (userRoleExists) {
+        return getErrorResponse(500, "User role already exists");
+    }
+
+    const userRole = await prismaDB.user_roles.create({
+        data: {
+            name: DefaultUserRole.user,
+            readable_name: "User",
+        }
+    });
+
+    const developerRoleExists = await prismaDB.user_roles.findFirst({
+        where: {
+            name: DefaultUserRole.developer
+        }
+    });
+
+    if (developerRoleExists) {
+        return getErrorResponse(500, "Developer role already exists");
+    }
+
+    const developerRole = await prismaDB.user_roles.create({
+        data: {
+            name: DefaultUserRole.developer,
+            readable_name: "Developer",
+        }
+    });
+
+    return getResponse(200, "OK", {});
+
 }

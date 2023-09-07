@@ -4,7 +4,6 @@ import {authOptions} from "@/lib/auth";
 import {getUserSsr} from "@/lib/ssr/user";
 import {Permissions} from "@/lib/user";
 import {prismaDB} from "@/lib/prisma";
-import {NextRequest} from "next/server";
 
 export async function GET() {
     const session = await getServerSession(authOptions);
@@ -23,7 +22,7 @@ export async function GET() {
         return getErrorResponse(403, "Forbidden");
     }
 
-    const userRoles = await prismaDB.user_roles.findMany({include: {permissions: true}});
+    const userRoles = await prismaDB.user_roles.findMany({include: {user_role_permissions: {include: {permissions: true}}}});
 
     return getResponse(200, "OK", {userRoles});
 }

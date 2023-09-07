@@ -1,23 +1,28 @@
 import {User} from "@/lib/user";
 import {prismaDB} from "@/lib/prisma";
+import {ApiUser} from "@/types/user";
 
 export async function getUserSsr(id: string) {
-    const dbUser = await prismaDB.users.findUnique({
+    const user = await prismaDB.users.findUnique({
         where: {
-            id: id
+            id
         },
         include: {
             user_role: {
                 include: {
-                    permissions: true
+                    user_role_permissions: {
+                        include: {
+                            permissions: true
+                        }
+                    }
                 }
             }
         }
     });
 
-    if (!dbUser) {
+    if (!user) {
         return null;
     }
 
-    return new User(dbUser);
+    return new User(user as ApiUser);
 }

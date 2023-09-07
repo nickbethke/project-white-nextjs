@@ -23,8 +23,8 @@ export const RegisterButton = () => {
 
 export const LogoutButton = () => {
     return (
-        <Button variant="ghost" onClick={() => {
-            signOut();
+        <Button variant="ghost" onClick={async () => {
+            await signOut();
             toast.success("Successfully logged out.");
         }}>
             Sign Out

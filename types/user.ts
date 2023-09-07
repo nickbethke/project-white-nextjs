@@ -1,34 +1,32 @@
-import {Prisma} from ".prisma/client";
-
-export type User = {
-    id: string;
-    username: string;
-    firstname: string;
-    lastname: string;
-    email: string;
-    createdAt: Date;
-    updatedAt: Date;
-    user_role: UserRole;
-    activation_token: string;
-}
-
-export enum UserRole {
+export enum DefaultUserRole {
     user = "User",
     admin = "Admin",
-    superadmin = "SuperAdmin"
+    superadmin = "SuperAdmin",
+    developer = "Developer"
 }
 
 export type ApiUserRole = {
     id: string;
     name: string;
-    readable: string;
+    readable_name: string;
     createdAt: Date;
     updatedAt: Date;
+    user_role_permissions: ApiUserRolePermission[];
+}
+
+export interface ApiUserRolePermission {
+    id: string;
+    user_rolesId: string
+    permissionsId: string
     permissions: ApiPermission;
 }
 
-export interface ApiPermission extends Prisma.user_role_permissionsUncheckedCreateWithoutUser_roleInput {
+export type ApiPermission = {
     id: string;
+    name: string;
+    readable_name: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type ApiUser = {

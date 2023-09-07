@@ -1,4 +1,4 @@
-import {ApiUser, ApiUserRole} from "@/types/user";
+import {ApiPermission, ApiUser, ApiUserRole} from "@/types/user";
 import {ICalendarEvent} from "@/components/calendar/interfaces/calendar-overview-interfaces";
 import {ApiGroupWithMembers} from "@/types/groups";
 import {notifications} from ".prisma/client";
@@ -68,6 +68,12 @@ export interface INotificationResponse extends IResponse {
 export interface IUserRolesResponse extends IResponse {
     data: {
         userRoles: ApiUserRole[]
+    }
+}
+
+export interface IUserRolesPermissionResponse extends IResponse {
+    data: {
+        permissions: ApiPermission[]
     }
 }
 

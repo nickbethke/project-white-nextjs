@@ -3,7 +3,7 @@ import {NextRequest} from "next/server";
 import {RegisterUserInput} from "@/lib/validations/user.schema";
 import {prismaDB} from "@/lib/prisma";
 import {hashPassword} from "@/lib/auth";
-import {UserRole} from "@/types/user";
+import {DefaultUserRole} from "@/types/user";
 import ActivationMail from "@/emails/activation-mail";
 import {Mail} from "@/lib/mail";
 import {render} from "@react-email/render";
@@ -31,6 +31,16 @@ export async function POST(req: NextRequest) {
 
     const activation_token = await hashPassword(email + Date.now());
 
+    const userRole = await prismaDB.user_roles.findFirst({
+        where: {
+            name: DefaultUserRole.user
+        }
+    });
+
+    if (!userRole) {
+        return getErrorResponse(500, "User role not found");
+    }
+
     const user = await prismaDB.users.create({
         data: {
             email,
@@ -41,7 +51,7 @@ export async function POST(req: NextRequest) {
             activation_token,
             user_role: {
                 connect: {
-                    name: UserRole.user
+                    id: userRole.id
                 }
             }
         }

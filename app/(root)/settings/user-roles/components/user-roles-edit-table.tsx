@@ -1,14 +1,14 @@
 "use client";
 
-import {ApiUserRole} from "@/types/user";
+import {ApiPermission, ApiUserRole} from "@/types/user";
 import React, {useState} from "react";
 import axios from "axios";
-import {IUserRolesResponse} from "@/types/axios-responses";
+import {IUserRolesPermissionResponse, IUserRolesResponse} from "@/types/axios-responses";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Checkbox} from "@/components/ui/checkbox";
 import {Permissions} from "@/lib/user";
-import toast from "react-hot-toast";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
+import {Loader} from "lucide-react";
+import {UserRolesCheckbox} from "@/app/(root)/settings/user-roles/components/user-roles-checkbox";
 
 const UserRolesEditValues: Record<Permissions, string> = {
     [Permissions.own_profile_update]: 'Own Profile Update',
@@ -54,152 +54,107 @@ const UserRolesEditValues: Record<Permissions, string> = {
 const UserRolesEditTable = () => {
 
     const [userRoles, setUserRoles] = useState<ApiUserRole[]>([]);
+    const [permissions, setPermissions] = useState<ApiPermission[]>([]);
+    const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
     React.useEffect(() => {
         (async () => {
-            await loadUserRoles();
+            await loadData();
         })();
     }, []);
 
-    const loadUserRoles = async () => {
-        try {
-            const response = await axios.get<IUserRolesResponse>('/api/users/roles');
-            const roles = response.data.data.userRoles;
-
-            // sort roles by allowed permissions count (ascending)
-            roles.sort((a, b) => {
-                const aCount = permissionTrueLength(a);
-                const bCount = permissionTrueLength(b);
-
-                if (aCount < bCount) {
-                    return -1;
-                }
-
-                if (aCount > bCount) {
-                    return 1;
-                }
-
-                return 0;
-            });
-
-            setUserRoles(roles);
-        } catch (e) {
-            console.error(e);
-        }
+    const loadData = async () => {
+        const res = await axios.get<IUserRolesResponse>('/api/users/roles');
+        const resPer = await axios.get<IUserRolesPermissionResponse>('/api/users/roles/permissions');
+        setUserRoles(res.data.data.userRoles);
+        setPermissions(resPer.data.data.permissions);
+        initialLoading && setInitialLoading(false);
     }
 
-    const permissionTrueLength = (userRole: ApiUserRole) => {
-        let count = 0;
-        Object.keys(userRole.permissions).forEach((permission) => {
-            if (userRole.permissions[permission as keyof typeof Permissions]) {
-                count++;
-            }
-        });
-        return count;
+    if (initialLoading) {
+        return (
+            <div className="flex items-center justify-center gap-2">
+                <Loader className="animate-spin"/>
+                Loading...
+            </div>
+        )
     }
 
-    if (!userRoles) {
-        return null;
-    }
-
-    const getPrefix = (permission: string) => {
+    const permissionPrefix = (permission: string) => {
         return permission.split('_').slice(0, -1).join('_');
     }
 
-    const prefixReadable = (prefix: string) => {
+    const permissionsGroupedByPrefix = () => {
+        const grouped: Record<string, ApiPermission[]> = {};
+        permissions.forEach((permission) => {
+            const prefix = permissionPrefix(permission.name);
+            if (!grouped[prefix]) {
+                grouped[prefix] = [];
+            }
+            grouped[prefix].push(permission);
+        });
+        // sort by prefix
+        Object.entries(grouped).forEach(([prefix, permissions]) => {
+            grouped[prefix] = permissions.toSorted((a, b) => {
+                return a.name.localeCompare(b.name);
+            });
+        });
+        return grouped;
+    }
+
+    const prefixToReadable = (prefix: string) => {
         return prefix.split('_').join(' ').toUpperCase();
     }
 
 
-    const groupPermissionsByPrefix = (): Record<string, Permissions[]> => {
-        const permissions = Object.keys(Permissions);
-        const groupedPermissions: Record<string, Permissions[]> = {};
-        permissions.forEach((permission) => {
-            const prefix = getPrefix(permission);
-            if (!groupedPermissions[prefix]) {
-                groupedPermissions[prefix] = [];
-            }
-            groupedPermissions[prefix].push(Permissions[permission as keyof typeof Permissions]);
-        });
+    const sortedPermissionGroups = Object.entries(permissionsGroupedByPrefix()).toSorted(([prefixA, permissionsA], [prefixB, permissionsB]) => {
+        return prefixA.localeCompare(prefixB);
+    });
 
-        // order by prefix
-        Object.keys(groupedPermissions).sort((a, b) => a.localeCompare(b)).forEach((key) => {
-            const value = groupedPermissions[key];
-            delete groupedPermissions[key];
-            groupedPermissions[key] = value;
-        });
-        return groupedPermissions;
-    }
-
-    const body = (prefix: string) => {
-
-        const groupedPermissions = groupPermissionsByPrefix();
-        return groupedPermissions[prefix].map((permission) => (
-            <TableRow key={permission}>
-                <TableCell>
-                    <div className="font-bold">{UserRolesEditValues[permission]}</div>
-                </TableCell>
-                {userRoles.map((userRole) => {
-                    return (
-                        <TableCell key={userRole.id}>
-                            <Checkbox
-                                checked={userRole.permissions[permission]}
-                                onCheckedChange={async (checked) => {
-                                    try {
-                                        const response = await axios.patch(`/api/users/roles/${userRole.id}`, {
-                                            permission: {
-                                                [permission]: checked,
-                                            }
-                                        });
-                                        toast.success(response.data.message);
-                                        await loadUserRoles();
-                                    } catch (e) {
-                                        console.error(e);
-                                    }
-                                }}
-                            />
-                        </TableCell>
-                    )
-                })}
-            </TableRow>
-        ))
-    }
-
-    const table = (prefix: string) => {
-
-        return (
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Role / Permission</TableHead>
-                        {userRoles.map((userRole) => (
-                            <TableHead className="font-bold tracking-widest"
-                                       key={userRole.id}>{userRole.name}</TableHead>
-                        ))}
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {body(prefix)}
-                </TableBody>
-
-            </Table>
-        );
-
-    }
-
+    const sortedUserRoles = userRoles.toSorted((a, b) => {
+        return a.user_role_permissions.length - b.user_role_permissions.length;
+    });
 
     return (
         <Accordion type="multiple">
-            {Object.keys(groupPermissionsByPrefix()).map((prefix) => {
-                if (prefix === 'user_roles')
-                    return null;
+            {sortedPermissionGroups.map(([prefix, permissions]) => {
                 return (
                     <AccordionItem key={prefix} value={prefix}>
                         <AccordionTrigger>
-                            {prefixReadable(prefix)}
+                            <div className="flex items-center justify-between gap-4">
+                                <span className="text-sm">{prefixToReadable(prefix)}</span>
+                                <span className="text-sm text-gray-500">{permissions.length}</span>
+                            </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                            {table(prefix)}
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Permission</TableHead>
+                                        {sortedUserRoles.map((userRole) => {
+                                            return (
+                                                <TableHead key={userRole.id}>
+                                                    {userRole.readable_name}
+                                                </TableHead>
+                                            )
+                                        })}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {permissions.map((permission) => {
+                                        return (
+                                            <TableRow key={permission.id}>
+                                                <TableCell>{UserRolesEditValues[permission.name as Permissions]}</TableCell>
+                                                {sortedUserRoles.map((userRole) => {
+                                                    return (<UserRolesCheckbox key={userRole.id} userRole={userRole}
+                                                                               onRefresh={loadData}
+                                                                               permission={permission}/>)
+                                                })}
+                                            </TableRow>
+                                        )
+                                    })}
+                                </TableBody>
+                            </Table>
                         </AccordionContent>
                     </AccordionItem>
                 )

@@ -37,15 +37,15 @@ export function MultiInput(props: MultiInputProps) {
   const formatItems = async (values: MultiInputValue[]) => {
     const newValue = [...values];
     if (props.formatItem !== undefined) {
-      for (let i = 0; i < newValue.length; i++) {
-        newValue[i].formattedValue = props.formatItem(newValue[i].value);
+      for (const element of newValue) {
+        element.formattedValue = props.formatItem(element.value);
       }
       setValue(newValue);
       console.log(newValue);
     }
   };
 
-  const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onEnter = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.currentTarget.value === "") return;
 
     if (e.key === "Enter") {
@@ -62,16 +62,16 @@ export function MultiInput(props: MultiInputProps) {
       setValue(newValue);
       props.onChange(newValue.map((v) => v.value));
       e.currentTarget.value = "";
-      formatItems(newValue);
+      await formatItems(newValue);
     }
   };
 
-  const removeItem = (index: number) => {
+  const removeItem = async (index: number) => {
     const newValue = [...value];
     newValue.splice(index, 1);
     setValue(newValue);
     props.onChange(newValue.map((v) => v.value));
-    formatItems(newValue);
+    await formatItems(newValue);
   };
 
   return (

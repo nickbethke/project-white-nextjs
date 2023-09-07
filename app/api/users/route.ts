@@ -71,34 +71,29 @@ class UserSearch {
     }
 
     async searchRole() {
-        const role = this.query.searchQuery;
-        const user_role_id = await prismaDB.user_roles.findUnique({
-            where: {
-                name: role
-            },
-            select: {
-                id: true
-            }
-        });
-
+        const user_role_id = this.query.searchQuery;
         if (!user_role_id) {
             return [];
         }
 
         const users = await prismaDB.users.findMany({
             where: {
-                user_role_id: user_role_id?.id
+                user_role_id
             },
             include: {
                 user_role: {
                     include: {
-                        permissions: true
+                        user_role_permissions: {
+                            include: {
+                                permissions: true
+                            }
+                        }
                     }
                 }
             }
         });
 
-        return users ?? [];
+        return users as ApiUser[] ?? [];
     }
 
     private searchUser() {
@@ -130,63 +125,29 @@ class UserSearch {
             include: {
                 user_role: {
                     include: {
-                        permissions: true
+                        user_role_permissions: {
+                            include: {
+                                permissions: true
+                            }
+                        }
                     }
                 }
             }
-        });
+        }) as Promise<ApiUser[]>;
     }
 
     private searchPermission(can: boolean) {
 
         const permission = this.query.searchQuery;
-        const allowedPermissions = [
-            "own_profile_update",
-            "own_profile_delete",
-            "user_create",
-            "user_read",
-            "user_update",
-            "user_delete",
-            "user_role_create",
-            "user_role_read",
-            "user_role_update",
-            "user_role_delete",
-            "user_role_permission_create",
-            "user_role_permission_read",
-            "user_role_permission_update",
-            "user_role_permission_delete",
-            "notification_create",
-            "notification_read",
-            "notification_update",
-            "notification_delete",
-            "option_create",
-            "option_read",
-            "option_update",
-            "option_delete",
-            "calendar_event_create",
-            "calendar_event_read",
-            "calendar_event_update",
-            "calendar_event_delete",
-            "group_create",
-            "group_read",
-            "group_update",
-            "group_delete",
-            "group_member_create",
-            "group_member_read",
-            "group_member_update",
-            "group_member_delete",
-        ];
-
-        if (!allowedPermissions.includes(permission)) {
-            return Promise.resolve([]);
-        }
 
         return prismaDB.users.findMany({
             where: {
                 user_role: {
-                    permissions: {
+                    user_role_permissions: {
                         some: {
-                            [permission]: can
+                            permissions: {
+                                name: permission,
+                            }
                         }
                     }
                 }
@@ -194,11 +155,15 @@ class UserSearch {
             include: {
                 user_role: {
                     include: {
-                        permissions: true
+                        user_role_permissions: {
+                            include: {
+                                permissions: true
+                            }
+                        }
                     }
                 }
             }
-        });
+        }) as Promise<ApiUser[]>;
     }
 }
 

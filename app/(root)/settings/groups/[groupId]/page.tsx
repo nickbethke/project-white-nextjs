@@ -3,10 +3,7 @@ import {Metadata} from "next";
 import {redirect} from "next/navigation";
 import React from "react";
 import {ChevronRight} from "lucide-react";
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/lib/auth";
 import {Permissions} from "@/lib/user";
-import {getUserSsr} from "@/lib/ssr/user";
 import {checkSessionAndPermissions, ISessionCheckAndPermissionsError} from "@/lib/session-check";
 
 export async function generateMetadata({params}: { params: { groupId: string } }): Promise<Metadata> {

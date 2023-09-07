@@ -16,7 +16,7 @@ export const Profile: React.FC<Props> = ({user}) => {
             <h1 className="text-2xl font-bold flex gap-2 items-center">
                 Profile
                 <Badge variant={user.isSuperAdmin ? 'destructive' : 'outline'}>
-                    {user.user_role.readable}
+                    {user.user_role.readable_name}
                 </Badge>
             </h1>
             <Separator/>

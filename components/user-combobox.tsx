@@ -11,7 +11,7 @@ import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import {ApiUser} from "@/types/user";
 import Gravatar from "@/components/gravatar";
 import axios from "axios";
-import {ApiGroup, ApiGroupWithMembers} from "@/types/groups";
+import {ApiGroupWithMembers} from "@/types/groups";
 import {IGroupsResponse} from "@/types/axios-responses";
 import {GroupBadge} from "@/components/group-badge";
 
@@ -24,7 +24,7 @@ type UserComboboxProps = {
     onChange: (value: Result) => void
 }
 
-export function UserCombobox({onChange}: UserComboboxProps) {
+export function UserCombobox(props: UserComboboxProps) {
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState("");
     const [search, setSearch] = React.useState("");
@@ -96,7 +96,7 @@ export function UserCombobox({onChange}: UserComboboxProps) {
                                     setValue(currentValue === value ? "" : currentValue)
                                     setOpen(false)
                                     setToGroup(false);
-                                    onChange({
+                                    props.onChange({
                                         type: "user",
                                         value: currentValue === value ? "" : users.find((user) => user.username === currentValue)?.id ?? ""
                                     })
@@ -125,7 +125,7 @@ export function UserCombobox({onChange}: UserComboboxProps) {
                                     setValue(currentValue === value ? "" : currentValue)
                                     setOpen(false)
                                     setToGroup(true);
-                                    onChange({
+                                    props.onChange({
                                         type: "group",
                                         value: currentValue === value ? "" : group.name.toLowerCase()
                                     })

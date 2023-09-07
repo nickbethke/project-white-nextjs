@@ -3,7 +3,6 @@
 import {DashboardItem} from "@/components/dashboard/dashboard-item";
 import {Mail, MailOpen, MessageCircleIcon} from "lucide-react";
 import React from "react";
-import {notifications} from ".prisma/client";
 import axios from "axios";
 import {ApiNotification, INotificationsResponse} from "@/types/axios-responses";
 import {Button} from "@/components/ui/button";

@@ -18,7 +18,7 @@ const ActivationPage = () => {
     const email = searchParams.get('email');
 
     useEffect(() => {
-        const activate = async () => {
+        (async () => {
             try {
                 const result = await axios.post('/api/auth/activate', {
                     token,
@@ -35,10 +35,7 @@ const ActivationPage = () => {
                 toast.error("Failed to activate your account.");
                 setActivated(false);
             }
-
-        }
-
-        activate();
+        })();
     }, [token, email]);
 
     if (!token || !email) {

@@ -266,7 +266,7 @@ export const NewUserDialog = ({buttonVariant, onCreated}: NewUserDialogProps) =>
                                         </FormLabel>
                                         <FormDescription>
                                             When this is checked, an activation token will be generated and sent to the
-                                            user's email, so that the user has to activate their account before they
+                                            user&apos;s email, so that the user has to activate their account before they
                                             can log in.
                                         </FormDescription>
                                     </div>

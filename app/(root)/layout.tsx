@@ -6,6 +6,7 @@ import {redirect} from "next/navigation";
 import {prismaDB} from "@/lib/prisma";
 import {AlertPromptProvider} from "@/providers/alert-prompt-provider";
 import {UserProvider} from "@/components/providers/user-provider";
+import React from "react";
 
 export default async function Layout({children}: { children: React.ReactNode }) {
     const session = await getServerSession(authOptions);

@@ -16,7 +16,11 @@ export async function GET(request: Request) {
         include: {
             user_role: {
                 include: {
-                    permissions: true
+                    user_role_permissions: {
+                        include: {
+                            permissions: true
+                        }
+                    }
                 }
             }
         }

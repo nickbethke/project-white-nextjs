@@ -3,7 +3,7 @@
 import {Separator} from "@/components/ui/separator";
 import {DataTable} from "./components/data-table";
 import {userColumns} from "./components/columns";
-import {ChevronRight, Plus, RefreshCcw} from "lucide-react";
+import {ChevronRight, RefreshCcw} from "lucide-react";
 import React from "react";
 import axios from "axios";
 import {IUsersResponse} from "@/types/axios-responses";
