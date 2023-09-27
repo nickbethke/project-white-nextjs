@@ -67,7 +67,7 @@ export async function GET(req: NextRequest, {params}: { params: { type: string }
     const filesWithUrl = files.map(file => {
         return {
             ...file,
-            url: `${req.nextUrl.origin}/public/uploads${file.folder}${file.id}`
+            url: `${process.env.APP_HOST}/public/uploads${file.folder}${file.id}`
         }
     });
 

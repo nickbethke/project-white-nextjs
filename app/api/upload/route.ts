@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     });
 
     return getResponse(200, "File uploaded", {
-        file: {...dbFile, url: `${request.nextUrl.origin}/public/uploads/${dbFile.id}`}
+        file: {...dbFile, url: `${process.env.APP_HOST}/public/uploads/${dbFile.id}`}
     });
 }
 
