@@ -2,6 +2,7 @@ import {ApiPermission, ApiUser, ApiUserRole} from "@/types/user";
 import {ICalendarEvent} from "@/components/calendar/interfaces/calendar-overview-interfaces";
 import {ApiGroupWithMembers} from "@/types/groups";
 import {notifications} from ".prisma/client";
+import {ApiFile} from "@/types/file";
 
 export interface IResponse {
     status: "success" | "error" | "fail";
@@ -80,5 +81,33 @@ export interface IUserRolesPermissionResponse extends IResponse {
 export interface IUserRoleResponse extends IResponse {
     data: {
         userRole: ApiUserRole
+    }
+}
+
+export interface IFileUploadResponse extends IResponse {
+    data: {
+        file: ApiFile
+    }
+}
+
+export interface IFilesResponse extends IResponse {
+    data: {
+        files: ApiFile[]
+    }
+}
+
+export interface IFileResponse extends IResponse {
+    data: {
+        file: ApiFile
+    }
+}
+
+export type FileInfo = {
+    file_name: string, file_type: string, file_size_in_bytes: number
+} & ({ file_dimensions: { width: number, height: number }, } | {})
+
+export interface IFileInfoResponse extends IResponse {
+    data: {
+        fileInfo: FileInfo
     }
 }

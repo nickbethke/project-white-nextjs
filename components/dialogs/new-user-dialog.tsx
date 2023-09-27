@@ -240,7 +240,7 @@ export const NewUserDialog = ({buttonVariant, onCreated}: NewUserDialogProps) =>
                                         <SelectContent>
                                             {roles.map(role => (
                                                 <SelectItem value={role.id} key={role.id}>
-                                                    {role.name}
+                                                    {role.readable_name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

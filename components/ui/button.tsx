@@ -24,6 +24,7 @@ const buttonVariants = cva(
                     "dark:bg-green-500 dark:text-green-900 dark:outline-none bg-green-50 text-green-500 outline",
                 "calendar-entry-current":
                     "dark:bg-green-500 dark:text-green-900 dark:outline-none dark:outline-white bg-green-100 text-green-500 outline outline-primary",
+                unStyled: "flex flex-col justify-stretch items-stretch text-left",
             },
             size: {
                 default: "h-10 px-4 py-2",
@@ -31,6 +32,7 @@ const buttonVariants = cva(
                 lg: "h-11 rounded-md px-8",
                 icon: "h-10 w-10",
                 xs: "h-6 rounded-md px-2",
+                none: "",
             },
         },
         defaultVariants: {

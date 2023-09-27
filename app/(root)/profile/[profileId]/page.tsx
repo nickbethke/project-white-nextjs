@@ -3,6 +3,7 @@ import {getUserSsr} from "@/lib/ssr/user";
 import {Profile} from "../components/profile-component";
 import {checkSessionAndPermissions, ISessionCheckAndPermissionsError} from "@/lib/session-check";
 import {Permissions} from "@/lib/user";
+import {ApiUser} from "@/types/user";
 
 export default async function ProfileView({params}: { params: { profileId: string } }) {
 
@@ -29,5 +30,5 @@ export default async function ProfileView({params}: { params: { profileId: strin
         redirect('/signin');
     }
 
-    return <Profile user={viewedUser}/>;
+    return <Profile user={viewedUser as ApiUser}/>;
 }

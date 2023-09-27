@@ -193,6 +193,7 @@ export async function GET(req: NextRequest) {
                 user_role: true,
                 createdAt: true,
                 updatedAt: true,
+                profile_picture: true
             }
         }
     );

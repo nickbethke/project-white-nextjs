@@ -5,7 +5,7 @@ import {getErrorResponse, getResponse} from "@/lib/utils";
 import {allowedDocumentTypes, allowedTypes} from "@/lib/constants/filetypes.constants";
 import sharp from "sharp";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
 
 
     const data = await request.formData()
@@ -34,19 +34,22 @@ export async function GET(request: NextRequest) {
         const file_content = await image.toBuffer()
 
         return getResponse(200, "Image info", {
-            file_name,
-            file_type,
-            file_size_in_bytes,
-            file_dimensions,
-            file_content
+            fileInfo: {
+                file_name,
+                file_type,
+                file_size_in_bytes,
+                file_dimensions,
+            }
         })
     } else {
         return getResponse(200, "File info", {
-            file_name,
-            file_type,
-            file_size_in_bytes,
-        })
-
+                fileInfo: {
+                    file_name,
+                    file_type,
+                    file_size_in_bytes,
+                }
+            }
+        );
     }
 }
 

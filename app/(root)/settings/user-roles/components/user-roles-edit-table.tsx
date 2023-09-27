@@ -10,47 +10,6 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {Loader} from "lucide-react";
 import {UserRolesCheckbox} from "@/app/(root)/settings/user-roles/components/user-roles-checkbox";
 
-const UserRolesEditValues: Record<Permissions, string> = {
-    [Permissions.own_profile_update]: 'Own Profile Update',
-    [Permissions.own_profile_delete]: 'Own Profile Delete',
-    [Permissions.user_read]: 'User Read',
-    [Permissions.user_create]: 'User Create',
-    [Permissions.user_update]: 'User Update',
-    [Permissions.user_delete]: 'User Delete',
-    [Permissions.user_role_read]: 'User Role Read',
-    [Permissions.user_role_create]: 'User Role Create',
-    [Permissions.user_role_update]: 'User Role Update',
-    [Permissions.user_role_delete]: 'User Role Delete',
-    [Permissions.user_role_permission_read]: 'User Role Permission Read',
-    [Permissions.user_role_permission_create]: 'User Role Permission Create',
-    [Permissions.user_role_permission_update]: 'User Role Permission Update',
-    [Permissions.user_role_permission_delete]: 'User Role Permission Delete',
-    [Permissions.group_read]: 'Group Read',
-    [Permissions.group_create]: 'Group Create',
-    [Permissions.group_update]: 'Group Update',
-    [Permissions.group_delete]: 'Group Delete',
-    [Permissions.group_member_read]: 'Group Member Read',
-    [Permissions.group_member_create]: 'Group Member Create',
-    [Permissions.group_member_update]: 'Group Member Update',
-    [Permissions.group_member_delete]: 'Group Member Delete',
-    [Permissions.notification_read]: 'Notification Read',
-    [Permissions.notification_create]: 'Notification Create',
-    [Permissions.notification_update]: 'Notification Update',
-    [Permissions.notification_delete]: 'Notification Delete',
-    [Permissions.calendar_event_read]: 'Calendar Event Read',
-    [Permissions.calendar_event_create]: 'Calendar Event Create',
-    [Permissions.calendar_event_update]: 'Calendar Event Update',
-    [Permissions.calendar_event_delete]: 'Calendar Event Delete',
-    [Permissions.option_read]: 'Option Read',
-    [Permissions.option_create]: 'Option Create',
-    [Permissions.option_update]: 'Option Update',
-    [Permissions.option_delete]: 'Option Delete',
-    [Permissions.user_roles_create]: 'Calendar Event Create',
-    [Permissions.user_roles_read]: 'Calendar Event Read',
-    [Permissions.user_roles_update]: 'Calendar Event Update',
-    [Permissions.user_roles_delete]: 'Calendar Event Delete',
-}
-
 const UserRolesEditTable = () => {
 
     const [userRoles, setUserRoles] = useState<ApiUserRole[]>([]);
@@ -144,7 +103,7 @@ const UserRolesEditTable = () => {
                                     {permissions.map((permission) => {
                                         return (
                                             <TableRow key={permission.id}>
-                                                <TableCell>{UserRolesEditValues[permission.name as Permissions]}</TableCell>
+                                                <TableCell>{permission.readable_name}</TableCell>
                                                 {sortedUserRoles.map((userRole) => {
                                                     return (<UserRolesCheckbox key={userRole.id} userRole={userRole}
                                                                                onRefresh={loadData}

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, {params: {userId}}: { params: { user
             user_role: true,
             createdAt: true,
             updatedAt: true,
-
+            profile_picture: true
         },
         where: {
             id: userId

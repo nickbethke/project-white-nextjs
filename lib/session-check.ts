@@ -2,6 +2,7 @@ import {getServerSession, Session} from "next-auth";
 import {authOptions} from "@/lib/auth";
 import {getUserSsr} from "@/lib/ssr/user";
 import {Permissions, User} from "@/lib/user";
+import {ApiUser} from "@/types/user";
 
 export enum ISessionCheckAndPermissionsError {
     noSession = "noSession",
@@ -16,6 +17,7 @@ export interface ISessionCheckAndPermissionsOnSuccess {
     error: null;
     user: User;
     session: Session;
+    apiUser: ApiUser;
 }
 
 export type ISessionCheckAndPermissionsResult =
@@ -36,7 +38,7 @@ export async function checkSessionAndPermissions(permission?: Permissions | Perm
     }
 
     if (!permission) {
-        return {error: null, user, session};
+        return {error: null, user, session, apiUser: JSON.parse(JSON.stringify(user)) as ApiUser};
     }
     if (Array.isArray(permission)) {
         for (const p of permission) {
@@ -48,8 +50,8 @@ export async function checkSessionAndPermissions(permission?: Permissions | Perm
         return {error: ISessionCheckAndPermissionsError.noPermission};
 
     } else {
-        return {error: null, user, session};
+        return {error: null, user, session, apiUser: JSON.parse(JSON.stringify(user)) as ApiUser};
     }
 
-    return {error: null, user, session};
+    return {error: null, user, session, apiUser: JSON.parse(JSON.stringify(user)) as ApiUser};
 }

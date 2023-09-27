@@ -5,7 +5,7 @@ import React from "react";
 import {
     Boxes,
     Calendar,
-    Cog,
+    Cog, Files,
     Group,
     Home,
     Inbox,
@@ -20,8 +20,9 @@ import {SidebarRoute} from "@/types/ui-types";
 import {SidebarItem} from "@/components/sidebar-item";
 import {useUser} from "@/components/providers/user-provider";
 import {Permissions} from "@/lib/user";
+import {cn} from "@/lib/utils";
 
-function Sidebar({className, ...props}: React.HTMLAttributes<HTMLElement>) {
+function Sidebar({...props}: React.HTMLAttributes<HTMLDivElement>) {
     const pathname = usePathname();
     const user = useUser();
 
@@ -55,6 +56,13 @@ function Sidebar({className, ...props}: React.HTMLAttributes<HTMLElement>) {
         active: pathname === `/calendar`,
         hasSeparator: true,
         icon: <Calendar/>
+    }, {
+        href: `/files`,
+        label: "Files",
+        active: pathname === `/files`,
+        icon: <Files/>,
+        hasSeparator: true,
+        canAccess: user.permission(Permissions.file_read),
     }, {
         href: `/profile`,
         label: "Profile",
@@ -99,13 +107,13 @@ function Sidebar({className, ...props}: React.HTMLAttributes<HTMLElement>) {
     }];
 
     return (
-        <div className="flex flex-grow flex-col min-h-screen select-none">
+        <aside className={cn('flex flex-grow flex-col min-h-screen select-none', props.className)} {...props}>
             <div className="flex-grow overflow-y-auto border-r flex flex-col py-4">
                 {user && routes.map((route) => (
                     <SidebarItem key={uniqueId()} route={route} user={user}/>
                 ))}
             </div>
-        </div>
+        </aside>
     );
 }
 

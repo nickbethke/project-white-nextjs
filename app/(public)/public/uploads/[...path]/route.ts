@@ -1,14 +1,13 @@
 import {NextRequest, NextResponse} from "next/server";
 import {prismaDB} from "@/lib/prisma";
 
-export async function GET(req: NextRequest, {params}: { params: { path: string } }) {
+export async function GET(req: NextRequest, {params}: { params: { path: string[] } }) {
 
     const isDownload = req.nextUrl.searchParams.has("download");
+    const folder = "/" + (params.path.slice(0, -1).length === 0 ? "" : params.path.slice(0, -1).join("/") + "/");
+    const file_name = params.path.at(params.path.length - 1);
 
-    const folder = params.path.split("/").slice(0, -1).join("/");
-    const file_name = params.path.split("/")[0];
-
-    const file = await prismaDB.files.findUnique({
+    const file = await prismaDB.files.findFirst({
         where: {
             folder,
             file_name

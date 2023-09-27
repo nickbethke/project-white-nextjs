@@ -52,7 +52,7 @@ type EnvVariableKey = "JWT_SECRET_KEY" | "JWT_EXPIRES_IN";
 
 export function dateTimeFormatted(date: string | Date): string {
     if (moment(date).isSame(moment(), "day")) {
-        return moment(date).format(process.env.NEXT_PUBLIC_PROJECT_WHITE_TIME_FORMAT);
+        return "Today " + moment(date).format(process.env.NEXT_PUBLIC_PROJECT_WHITE_TIME_FORMAT);
     }
     return moment(date).format(process.env.NEXT_PUBLIC_PROJECT_WHITE_DATETIME_FORMAT);
 }

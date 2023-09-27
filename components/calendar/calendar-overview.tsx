@@ -2,18 +2,18 @@
 
 import * as React from "react";
 import {
-    ICalendarEvent,
-    ICalendarOverviewProps,
-    ICalendarOverviewState,
+  ICalendarEvent,
+  ICalendarOverviewProps,
+  ICalendarOverviewState,
 } from "@/components/calendar/interfaces/calendar-overview-interfaces";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {ChevronLeft, ChevronRight} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
-import {ICalendarEvents} from "@/types/axios-responses";
-import {NewCalendarEventDialog} from "@/components/dialogs/new-calendar-event-dialog";
-import {useCalendarEventModalStore} from "@/lib/hooks/use-calendar-event-modal";
+import { ICalendarEvents } from "@/types/axios-responses";
+import { NewCalendarEventDialog } from "@/components/dialogs/new-calendar-event-dialog";
+import { useCalendarEventModalStore } from "@/lib/hooks/use-calendar-event-modal";
 
 const CalenderOverview: React.FC<ICalendarOverviewProps> = ({ className }) => {
   const calendarEventModal = useCalendarEventModalStore();
@@ -53,7 +53,7 @@ const CalenderOverview: React.FC<ICalendarOverviewProps> = ({ className }) => {
       ...state,
       shownYear: year,
     });
-  }, [year]);
+  }, [state, year]);
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();

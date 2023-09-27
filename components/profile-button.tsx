@@ -6,6 +6,9 @@ import axios from "axios";
 import {IUserResponse} from "@/types/axios-responses";
 import {Skeleton} from "@/components/ui/skeleton";
 import toast from "react-hot-toast";
+import {User} from "@/lib/user";
+import Image from "next/image";
+import {UserProfilePicture} from "@/components/user-profile-picture";
 
 type ProfileButtonProps = {
     user_id: ApiUser['id']
@@ -13,13 +16,13 @@ type ProfileButtonProps = {
 
 export default function ProfileButton({user_id}: ProfileButtonProps) {
 
-    const [user, setUser] = React.useState<ApiUser | null>(null);
+    const [user, setUser] = React.useState<User | null>(null);
 
     React.useEffect(() => {
         (async () => {
             try {
                 const response = await axios.get<IUserResponse>(`/api/users/${user_id}`);
-                setUser(response.data.data.user);
+                setUser(new User(response.data.data.user));
             } catch (e) {
                 toast.error("Failed to fetch user");
             }
@@ -34,7 +37,7 @@ export default function ProfileButton({user_id}: ProfileButtonProps) {
         <Link href={`/profile/${user.id}`}>
             <div className="flex items-center space-x-3 lg:space-x-4">
                 <div className="flex-shrink-0">
-                    <Gravatar email={user.email} size={40} className="rounded-full"/>
+                    <UserProfilePicture user={user}/>
                 </div>
                 <div className="hidden lg:block">
                     <div className="text-sm font-medium text-accent-foreground">

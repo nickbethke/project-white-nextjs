@@ -1,6 +1,7 @@
 import {redirect} from "next/navigation";
 import {Profile} from "./components/profile-component";
 import {checkSessionAndPermissions, ISessionCheckAndPermissionsError} from "@/lib/session-check";
+import {ApiUser} from "@/types/user";
 
 const ProfilePage = async () => {
 
@@ -15,8 +16,8 @@ const ProfilePage = async () => {
         }
         return null;
     } else {
-        const {user} = auth;
-        return <Profile user={user}/>;
+        const {apiUser} = auth;
+        return <Profile user={apiUser}/>;
     }
 
 }

@@ -35,6 +35,7 @@ export type ApiUser = {
     firstname: string;
     lastname: string;
     email: string;
+    profile_picture: string;
     createdAt: Date;
     updatedAt: Date;
     user_role: ApiUserRole;

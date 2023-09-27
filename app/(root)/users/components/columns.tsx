@@ -5,7 +5,6 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {dateTimeFormatted} from "@/lib/utils";
 import Link from "next/link";
 import {ApiUser} from "@/types/user";
-import Gravatar from "@/components/gravatar";
 import {ChevronDown, ChevronsUpDown, ChevronUp, MoreHorizontal} from "lucide-react";
 import {RoleBadge} from "@/components/role-badge";
 import {Button} from "@/components/ui/button";
@@ -18,6 +17,8 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import toast from "react-hot-toast";
+import {UserProfilePicture} from "@/components/user-profile-picture";
+import {User} from "@/lib/user";
 
 function sortArrow({column}: { column: Column<ApiUser> }) {
     if (column.getIsSorted() === "desc") {
@@ -65,7 +66,7 @@ export const userColumns: ColumnDef<ApiUser>[] = [
         cell: ({row}) => {
             return (
                 <div className="flex items-center">
-                    <Gravatar email={row.original.email} size={42} className="rounded-full"/>
+                    <UserProfilePicture user={row.original}/>
                     <div className="flex flex-col">
                         <span className="ml-2 font-bold">{row.original.username}</span>
                         <span
@@ -91,7 +92,7 @@ export const userColumns: ColumnDef<ApiUser>[] = [
         cell: ({row}) => {
             return (
                 <div className="flex items-center">
-                    <Link href={`mailto:${row.original.email}`}>
+                    <Link href={`mailto:${row.original.email}`} target="_blank" title="Send email">
                         <p>{row.original.email}</p>
                     </Link>
                 </div>

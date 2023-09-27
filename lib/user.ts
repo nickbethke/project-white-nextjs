@@ -1,5 +1,7 @@
 import {ApiUser, ApiUserRole, DefaultUserRole} from "@/types/user";
 import {dateTimeFormatted} from "@/lib/utils";
+import md5 from "@/lib/md5";
+import {ApiFile} from "@/types/file";
 
 export enum Permissions {
     own_profile_update = "own_profile_update",
@@ -40,6 +42,10 @@ export enum Permissions {
     user_roles_read = "user_roles_read",
     user_roles_update = "user_roles_update",
     user_roles_delete = "user_roles_delete",
+    file_create = "file_create",
+    file_read = "file_read",
+    file_update = "file_update",
+    file_delete = "file_delete",
 }
 
 export const ReadablePermissions: Record<Permissions, string> = {
@@ -81,6 +87,10 @@ export const ReadablePermissions: Record<Permissions, string> = {
     user_roles_read: "Read user roles",
     user_roles_update: "Update user roles",
     user_roles_delete: "Delete user roles",
+    file_create: "Create file",
+    file_read: "Read file",
+    file_update: "Update file",
+    file_delete: "Delete file",
 }
 
 interface IUser extends ApiUser {
@@ -96,6 +106,7 @@ export class User implements IUser {
     updatedAt: Date;
     user_role: ApiUserRole;
     username: string;
+    profile_picture: string;
 
 
     constructor(apiUser: ApiUser) {
@@ -107,6 +118,7 @@ export class User implements IUser {
         this.updatedAt = apiUser.updatedAt;
         this.user_role = apiUser.user_role;
         this.username = apiUser.username;
+        this.profile_picture = apiUser.profile_picture;
     }
 
     get fullName(): string {
@@ -140,7 +152,27 @@ export class User implements IUser {
     permission(permission: Permissions) {
         return this.user_role.user_role_permissions.find((userRolePermission) => {
             return userRolePermission.permissions.name === permission;
-        });
+        }) !== undefined;
+    }
+
+    get profilePicture(): string {
+        if (this.profile_picture === "gravatar") {
+            const hash = md5(this.email);
+            console.log(hash);
+            return `https://www.gravatar.com/avatar/${hash}?s=200&d=mp`;
+        }
+        return this.profile_picture;
+    }
+
+    get profilePictureType(): "url" | "gravatar" {
+        if (this.profile_picture === "gravatar") {
+            return "gravatar";
+        }
+        return "url";
+    }
+
+    async changeProfilePicture(file: ApiFile) {
+        return null;
     }
 }
 
