@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                     String            @id @default(uuid())
+  username               String
+  password               String
+  firstname              String
+  lastname               String
+  email                  String
+  profile_picture        String            @default("gravatar") @db.VarChar(255)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  activation_token       String
+  user_role_id           String
+  user_role              user_roles        @relation("user_role", fields: [user_role_id], references: [id])
+  send_notifications     notifications[]   @relation("send_notifications")
+  received_notifications notifications[]   @relation("received_notifications")
+  calendar_events        calendar_events[] @relation("user_calendar_events")
+  group_members          group_members[]
+
+  @@unique([email])
+  @@unique([username])
+  @@index([username], name: "username")
+}
+
+model user_roles {
+  id                    String                  @id @default(uuid())
+  name                  String
+  readable_name         String
+  users                 users[]                 @relation("user_role")
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  user_role_permissions user_role_permissions[]
+}
+
+// n to n relation table between user_roles and permissions
+
+model user_role_permissions {
+  id            String       @id @default(uuid())
+  user_roles    user_roles?  @relation(fields: [user_rolesId], references: [id], onDelete: Cascade)
+  user_rolesId  String?
+  permissions   permissions? @relation(fields: [permissionsId], references: [id], onDelete: Cascade)
+  permissionsId String?
+}
+
+model permissions {
+  id                    String                  @id @default(uuid())
+  name                  String
+  readable_name         String
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  user_role_permissions user_role_permissions[]
+}
+
+enum notification_status {
+  read
+  unread
+  archived
+}
+
+enum notification_type {
+  alert
+  message
+  request
+}
+
+model notifications {
+  id        String              @id @default(uuid())
+  from_id   String
+  from      users               @relation("send_notifications", fields: [from_id], references: [id])
+  to_id     String
+  to        users               @relation("received_notifications", fields: [to_id], references: [id])
+  subject   String              @db.Text
+  content   String              @db.LongText
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  status    notification_status @default(unread)
+  type      notification_type   @default(message)
+}
+
+model options {
+  id        String   @id @default(uuid())
+  name      String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  autoload  Boolean  @default(true)
+}
+
+model calendar_events {
+  id        String   @id @default(uuid())
+  user_id   String
+  user      users    @relation("user_calendar_events", fields: [user_id], references: [id])
+  title     String   @db.VarChar(255)
+  notes     String   @db.Text
+  links     String   @db.Text
+  start     DateTime
+  end       DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model groups {
+  id            String          @id @default(uuid())
+  name          String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  group_members group_members[] @relation("group_members")
+
+  @@unique([name])
+}
+
+model group_members {
+  id        String   @id @default(uuid())
+  group_id  String
+  group     groups   @relation("group_members", fields: [group_id], references: [id], onDelete: Cascade)
+  user_id   String
+  user      users    @relation(fields: [user_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model files {
+  id           String   @id @default(uuid())
+  folder       String   @default("/") @db.VarChar(255)
+  file_name    String   @db.VarChar(255)
+  file_type    String   @db.VarChar(255)
+  file_content Bytes    @db.LongBlob
+  file_size    Int      @db.Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
