@@ -1,11 +1,9 @@
-import {NextRequest, NextResponse} from "next/server";
-import {prismaDB} from "@/lib/prisma";
-import {FileInfo} from "@/types/axios-responses";
-import {getErrorResponse, getResponse} from "@/lib/utils";
-import {isImage, isVideo} from "@/lib/files";
+import { isImage } from "@/lib/files";
+import { prismaDB } from "@/lib/prisma";
+import { getErrorResponse, getResponse } from "@/lib/utils";
+import { FileInfo } from "@/types/axios-responses";
+import { NextRequest } from "next/server";
 import sharp from "sharp";
-import MediaInfoFactory from 'mediainfo.js'
-import {ReadChunkFunc} from "mediainfo.js/src/MediaInfo";
 
 export async function GET(req: NextRequest, {params}: { params: { fileId: string } }) {
 
