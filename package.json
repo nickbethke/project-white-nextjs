@@ -31,6 +31,7 @@
     "@react-email/section": "0.0.9",
     "@react-email/text": "0.0.5",
     "@tanstack/react-table": "^8.9.3",
+    "@types/crypto-js": "^4.1.2",
     "@types/lodash": "^4.14.197",
     "@types/node": "20.4.8",
     "@types/react": "18.2.19",
@@ -44,6 +45,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
     "emailjs": "^4.0.2",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.13",
@@ -59,11 +61,11 @@
     "mediainfo.js": "^0.2.1",
     "moment": "^2.29.4",
     "mousetrap": "^1.6.5",
-    "next": "13.4.13",
+    "next": "^13.5.4",
     "next-auth": "^4.22.5",
     "next-themes": "^0.2.1",
-    "postcss": "8.4.27",
-    "prisma": "^5.2.0",
+    "postcss": "^8.4.31",
+    "prisma": "^5.4.2",
     "react": "18.2.0",
     "react-animate-height": "^3.2.2",
     "react-dom": "18.2.0",
@@ -77,7 +79,6 @@
     "tailwindcss": "^3.3.3",
     "tailwindcss-animate": "^1.0.6",
     "typescript": "^5.2.2",
-    "ws": "^8.13.0",
     "zod": "^3.21.4",
     "zustand": "^4.4.1"
   },
@@ -87,7 +88,6 @@
     "@types/ffprobe-static": "^2.0.1",
     "@types/fluent-ffmpeg": "^2.1.21",
     "@types/js-cookie": "^3.0.3",
-    "@types/mousetrap": "^1.6.11",
-    "@types/ws": "^8.5.5"
+    "@types/mousetrap": "^1.6.11"
   }
 }

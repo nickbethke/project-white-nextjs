@@ -3,6 +3,7 @@ import {ICalendarEvent} from "@/components/calendar/interfaces/calendar-overview
 import {ApiGroupWithMembers} from "@/types/groups";
 import {notifications} from ".prisma/client";
 import {ApiFile} from "@/types/file";
+import {ApiProject} from "@/types/projects";
 
 export interface IResponse {
     status: "success" | "error" | "fail";
@@ -78,6 +79,13 @@ export interface IUserRolesPermissionResponse extends IResponse {
     }
 }
 
+export interface IUserRolesPermissionPatchResponse extends IResponse {
+    data: {
+        created: number,
+        deleted: number,
+    }
+}
+
 export interface IUserRoleResponse extends IResponse {
     data: {
         userRole: ApiUserRole
@@ -111,3 +119,10 @@ export interface IFileInfoResponse extends IResponse {
         fileInfo: FileInfo
     }
 }
+
+export interface IProjectsGet extends IResponse {
+    data: {
+        projects: ApiProject[]
+    }
+}
+

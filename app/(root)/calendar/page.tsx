@@ -9,7 +9,8 @@ export default function CalendarPage() {
     <div className="p-4">
       <h1 className="text-2xl font-bold flex gap-2 items-baseline">Calendar</h1>
       <Separator />
-      <CalenderOverview className="mt-4" />
+        {/* TODO: Overwork with a modal not every button its own */}
+        {/*<CalenderOverview className="mt-4" />*/}
     </div>
   );
 }

@@ -46,6 +46,18 @@ export enum Permissions {
     file_read = "file_read",
     file_update = "file_update",
     file_delete = "file_delete",
+    project_create = "project_create",
+    project_read = "project_read",
+    project_update = "project_update",
+    project_delete = "project_delete",
+    task_create = "task_create",
+    task_read = "task_read",
+    task_update = "task_update",
+    task_delete = "task_delete",
+    issue_create = "issue_create",
+    issue_read = "issue_read",
+    issue_update = "issue_update",
+    issue_delete = "issue_delete",
 }
 
 export const ReadablePermissions: Record<Permissions, string> = {
@@ -91,6 +103,18 @@ export const ReadablePermissions: Record<Permissions, string> = {
     file_read: "Read file",
     file_update: "Update file",
     file_delete: "Delete file",
+    project_create: "Create project",
+    project_read: "Read project",
+    project_update: "Update project",
+    project_delete: "Delete project",
+    task_create: "Create task",
+    task_read: "Read task",
+    task_update: "Update task",
+    task_delete: "Delete task",
+    issue_create: "Create issue",
+    issue_read: "Read issue",
+    issue_update: "Update issue",
+    issue_delete: "Delete issue",
 }
 
 interface IUser extends ApiUser {

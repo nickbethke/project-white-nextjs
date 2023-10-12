@@ -27,6 +27,11 @@ model users {
   received_notifications notifications[]   @relation("received_notifications")
   calendar_events        calendar_events[] @relation("user_calendar_events")
   group_members          group_members[]
+  task_comments          task_comments[]
+  task_assignees         task_assignees[]
+  issue_comments         issue_comments[]
+  projects               projects?         @relation("projects_members", fields: [projectsId], references: [id])
+  projectsId             String?
 
   @@unique([email])
   @@unique([username])
@@ -131,12 +136,136 @@ model group_members {
 }
 
 model files {
-  id           String   @id @default(uuid())
-  folder       String   @default("/") @db.VarChar(255)
-  file_name    String   @db.VarChar(255)
-  file_type    String   @db.VarChar(255)
-  file_content Bytes    @db.LongBlob
-  file_size    Int      @db.Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String              @id @default(uuid())
+  folder            String              @default("/") @db.VarChar(255)
+  file_name         String              @db.VarChar(255)
+  file_type         String              @db.VarChar(255)
+  file_content      Bytes               @db.LongBlob
+  file_size         Int                 @db.Int
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  task_attachments  task_attachments[]
+  issue_attachments issue_attachments[]
+}
+
+model projects {
+  id          String     @id @default(uuid())
+  name        String
+  description String     @db.Text
+  is_public   Boolean    @default(false)
+  homepages   String     @default("") @db.Text
+  members     users[]    @relation("projects_members")
+  parent_id   String?
+  parent      projects?  @relation("parent_projects", fields: [parent_id], references: [id])
+  children    projects[] @relation("parent_projects")
+  tasks       tasks[]    @relation("project_tasks")
+  issues      issues[]   @relation("project_issues")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum task_type {
+  task
+  milestone
+  bug
+  feature
+}
+
+model tasks {
+  id               String             @id @default(uuid())
+  name             String
+  description      String             @db.Text
+  type             task_type          @default(task)
+  project_id       String
+  project          projects           @relation("project_tasks", fields: [project_id], references: [id])
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  task_comments    task_comments[]
+  task_attachments task_attachments[]
+  task_assignees   task_assignees[]
+  task_labels      task_labels[]
+}
+
+model task_comments {
+  id        String   @id @default(uuid())
+  task_id   String
+  task      tasks    @relation(fields: [task_id], references: [id])
+  user_id   String
+  user      users    @relation(fields: [user_id], references: [id])
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model task_attachments {
+  id        String   @id @default(uuid())
+  task_id   String
+  task      tasks    @relation(fields: [task_id], references: [id])
+  file_id   String
+  file      files    @relation(fields: [file_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model task_assignees {
+  id        String   @id @default(uuid())
+  task_id   String
+  task      tasks    @relation(fields: [task_id], references: [id])
+  user_id   String
+  user      users    @relation(fields: [user_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model task_labels {
+  id        String   @id @default(uuid())
+  task_id   String
+  task      tasks    @relation(fields: [task_id], references: [id])
+  label_id  String
+  label     labels   @relation(fields: [label_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model labels {
+  id          String        @id @default(uuid())
+  name        String
+  color       String        @default("#000000") @db.VarChar(255)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  task_labels task_labels[]
+}
+
+model issues {
+  id          String              @id @default(uuid())
+  name        String
+  description String              @db.Text
+  type        task_type           @default(bug)
+  project_id  String
+  project     projects            @relation("project_issues", fields: [project_id], references: [id])
+  comments    issue_comments[]    @relation("issue_comments")
+  attachments issue_attachments[] @relation("issue_attachments")
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model issue_comments {
+  id        String   @id @default(uuid())
+  issue_id  String
+  issue     issues   @relation("issue_comments", fields: [issue_id], references: [id])
+  user_id   String
+  user      users    @relation(fields: [user_id], references: [id])
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model issue_attachments {
+  id        String   @id @default(uuid())
+  issue_id  String
+  issue     issues   @relation("issue_attachments", fields: [issue_id], references: [id])
+  file_id   String
+  file      files    @relation(fields: [file_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

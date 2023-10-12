@@ -8,3 +8,23 @@ export async function getPermissionIdByName(name: Permissions) {
         }
     }))?.id ?? null;
 }
+
+export async function getProjectsByUserId(userId: string) {
+    // return where the user is a member or the project is public
+    return prismaDB.projects.findMany({
+        where: {
+            OR: [
+                {
+                    members: {
+                        some: {
+                            id: userId
+                        }
+                    }
+                },
+                {
+                    is_public: true
+                }
+            ]
+        }
+    });
+}
